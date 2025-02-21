@@ -47,15 +47,15 @@
 
 ## Reporting Guidelines
 
-- **Email**: admin@motoprotocol.io
-- **Discord DM**: MOTO_SoloDev#1234
+- **Email**: mamllechat11@gmail.com
+- **Discord**: MOTO PROTOCOL
 - **Online Form**: Available through official website
 
 ## Contact Information
 
 - **Project Founder**
-  - Nickname: MOTO_SoloDev
-  - Email: admin@motoprotocol.io
-  - Discord: MOTO_SoloDev#1234
+  - Discord: MOTO PROTOCOL
+  - Email: mamllechat11@gmail.com
+  - Twitter: @motoprotocol
 
 > Note: This document may be modified as the community grows and project expands.
