@@ -4,22 +4,18 @@
 
 ### Official Channels
 
+### Official Channels
+
 1. **Discord**
+   - Server Name: MOTO PROTOCOL
    - Main channel for real-time communication
    - Announcements, development discussions, Q&A
-   - [Invite Link](https://discord.gg/RT5jhBKq)
 
-2. **Telegram**
-   - News updates
-   - Event announcements
-   - Quick community interactions
-
-3. **Twitter (X)**
-   - Project roadmap updates
-   - Partnership announcements
-   - Event notifications
-
-4. **Medium/Blog**
+2. **Twitter**
+   - Handle: @motoprotocol
+   - Project updates and announcements
+   - 
+3. **Medium/Blog**
    - Technical articles
    - Development updates
    - In-depth project insights
