@@ -73,9 +73,9 @@
 - Participate in translation/design/operations
 
 ### 5. Where can I get more information?
-- Email: admin@motoprotocol.io
-- Discord: [Invite Link](https://discord.gg/RT5jhBKq)
-- Twitter: @MOTOProtocol
+- Email: mamllechat11@gmail.com
+- Discord: MOTO PROTOCOL
+- Twitter: @motoprotocol
 
 ## Additional Resources
 - Technical Documentation: See docs/technical/
