@@ -1,37 +1,57 @@
-# MOTO PROTOCOL Examples
+# Basic Examples for MOTO PROTOCOL
 
-This directory contains example code and tutorials for MOTO PROTOCOL integration.
+This directory contains basic examples for interacting with MOTO PROTOCOL tokens on Solana.
 
-## Basic Examples
+## Examples Overview
 
-### 1. Token Operations
-- [Check Token Balance](./basic/check-balance.ts)
-- [Transfer Tokens](./basic/transfer-tokens.ts)
-- [Get Token Info](./basic/token-info.ts)
+### 1. Token Balance Checker (check-balance.ts)
+The `check-balance.ts` example demonstrates how to connect to Solana devnet, query MPT token balances, and handle various edge cases and errors.
 
-### 2. Data Validation
-- [Submit Vehicle Data](./basic/submit-data.ts)
-- [Validate Sensor Data](./basic/validate-data.ts)
+Key Learning Points:
+- Solana Web3.js connection handling
+- SPL Token account structure
+- Error handling best practices
 
-## Advanced Examples
+Real-world Applications:
+- Wallet integration
+- Balance monitoring systems
+- Transaction verification
 
-### 1. ZK-Rollup Integration
-- [Batch Processing](./advanced/batch-process.ts)
-- [ZK Proof Generation](./advanced/generate-proof.ts)
+### 2. Token Transfer Example (transfer-tokens.ts)
+The `transfer-tokens.ts` example shows how to create token transfer instructions, build and send transactions, and confirm transaction success.
 
-### 2. RDMA Implementation
-- [High-Speed Data Transfer](./advanced/rdma-transfer.ts)
-- [Network Configuration](./advanced/network-setup.ts)
+Key Learning Points:
+- Transaction building process
+- Account permission handling
+- Transaction confirmation flow
 
-## Step-by-Step Tutorials
+Real-world Applications:
+- Payment systems
+- Token distribution
+- Automated transfers
 
-1. [Getting Started](./tutorials/01-getting-started.md)
-2. [Basic Token Operations](./tutorials/02-token-operations.md)
-3. [Data Submission Guide](./tutorials/03-data-submission.md)
-4. [Advanced Integration](./tutorials/04-advanced-integration.md)
+### 3. Token Information (token-info.ts)
+The `token-info.ts` example covers fetching token metadata, reading supply information, and checking token authorities.
 
-## Additional Resources
+Key Learning Points:
+- Token mint structure
+- Metadata handling
+- Authority verification
 
-- [API Documentation](../technical/api.md)
-- [Development Guide](../technical/setup-guide.md)
-- [Architecture Overview](../technical/architecture.md)
+Real-world Applications:
+- Token dashboards
+- Supply monitoring
+- Admin interfaces
+
+## Getting Started
+1. Install dependencies: `npm install @solana/web3.js @solana/spl-token`
+2. Configure Solana CLI: `solana config set --url devnet`
+3. Run examples: `ts-node check-balance.ts`
+
+## Testing
+Run tests using: `npm test`
+
+## Next Steps
+- Check advanced examples in `../advanced/`
+- Review tutorials in `../tutorials/`
+- Explore integration guides in `../../technical/`
