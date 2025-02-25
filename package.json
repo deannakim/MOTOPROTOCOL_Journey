@@ -1,13 +1,28 @@
 {
+  "name": "moto-protocol",
+  "version": "1.0.0",
+  "description": "MOTO PROTOCOL SPL Token Project on Solana",
+  "main": "index.js",
   "scripts": {
     "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts",
+    "lint": "eslint . --ext .ts",
+    "format": "prettier --write \"**/*.{ts,json,md}\""
+  },
+  "dependencies": {
+    "@metaplex-foundation/js": "^0.19.4",
+    "@solana/spl-token": "^0.3.8",
+    "@solana/web3.js": "^1.78.4"
   },
   "devDependencies": {
     "@types/jest": "^29.5.0",
+    "@types/node": "^20.4.5",
     "jest": "^29.5.0",
     "ts-jest": "^29.1.0",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "prettier": "^3.0.0",
+    "eslint": "^8.45.0"
   }
 }
