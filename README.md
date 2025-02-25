@@ -23,10 +23,5 @@ Detailed documentation can be found in the [docs](./docs) directory:
 - [DEX Listing Guide](./docs/dex-listing.md)
 - [Troubleshooting](./docs/troubleshooting.md)
 
-## 🤝 Contributing
-- How to contribute
-- Development setup
-- Pull request process
-
 ## 📝 License
 [License information]
