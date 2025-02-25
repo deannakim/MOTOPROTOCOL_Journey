@@ -1,17 +1,6 @@
-// Increase timeout for all tests
-jest.setTimeout(10000);
+// Jest setup file
+jest.setTimeout(30000); // Set test timeout
 
-// Global console mock to reduce noise during tests
-global.console = {
-  ...console,
-  // Uncomment to disable specific console methods during tests
-  // log: jest.fn(),
-  // info: jest.fn(),
-  // warn: jest.fn(),
-  // error: jest.fn(),
-};
-
-// Clean up after all tests
-afterAll(() => {
-  jest.clearAllMocks();
-});
+// Add global settings if needed
+process.env.SOLANA_NETWORK = 'devnet';
+process.env.TOKEN_MINT = 'GccSrdDCs28Up6W8BdqDUwpSbJUAg2LXPRKPeQsNx6h';
