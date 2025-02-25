@@ -1,9 +1,9 @@
 # MOTO PROTOCOL SPL Token Project
 
 ## 📌 Quick Start
-- Installation requirements
-- Basic setup commands
-- Quick usage example
+- **Installation requirements:** Node.js, npm, Solana CLI, etc.
+- **Basic setup commands:** Environment configuration, token creation, and metadata setup.
+- **Quick usage example:** Running basic commands to create and list your SPL token.
 
 ## 🎯 Features
 - SPL Token Creation
@@ -12,20 +12,30 @@
 - [Future] Marketing Automation
 
 ## 🛠 Installation
-- Prerequisites
-- Step-by-step installation
-- Configuration
+- **Prerequisites:** Node.js (latest LTS), npm, and Solana CLI.
+- **Step-by-step installation:** See [Setup Guide](./docs/setup-guide.md).
 
 ## 📖 Documentation
 Detailed documentation can be found in the [docs](./docs) directory:
-- [Token Creation Guide](./docs/token-creation.md)
-- [Metadata Setup](./docs/metadata-setup.md)
-- [DEX Listing Guide](./docs/dex-listing.md)
-- [Troubleshooting](./docs/troubleshooting.md)
+- **Guides:**
+  - [Token Creation Guide](./docs/guides/token-creation.md)
+  - [Metadata Setup](./docs/guides/metadata-setup.md)
+  - [DEX Listing Guide](./docs/guides/dex-listing.md)
+- **Technical:**
+  - [Architecture](./docs/technical/architecture.md)
+  - [API Reference](./docs/technical/api-reference.md)
+- **Troubleshooting:** [Troubleshooting](./docs/troubleshooting.md)
+- **FAQ:** [FAQ](./docs/faq.md) *(new)*
+
+## 📝 Testing
+Tests are run using Jest. For details, see [Testing Guidelines](./docs/guides/testing-guidelines.md).
+
+## 📊 Roadmap
+Future updates and plans are outlined in [Roadmap](./docs/roadmap.md).
+
+## 📝 Contribution
+*Contributions are currently not accepted.*
 
 ## 📝 License
 [License information]
 
-## Contribution Guidelines
-
-At this time, we are not accepting external contributions. This project is managed by our internal team, and any contributions will be reviewed and considered in future updates. Thank you for your interest!
