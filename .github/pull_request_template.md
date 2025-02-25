@@ -1,29 +1,42 @@
 ## Description
-Please include a summary of the changes and the related issue.
+Please provide a brief description of your changes and link any related issues.
 
-## Type of change
-Please delete options that are not relevant.
+## Type of Change
+Please check the relevant options:
 
-- [ ] Bug fix (non-breaking change which fixes an issue)
-- [ ] New feature (non-breaking change which adds functionality)
-- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
-- [ ] Documentation update
+- [ ] Token Metadata Update
+- [ ] DEX Integration/Listing
+- [ ] Documentation Update (README, guides)
+- [ ] Bug Fix
+- [ ] New Feature
+- [ ] Dependency Update
+- [ ] Environment Configuration (Node.js, Solana CLI)
 
-## How Has This Been Tested?
-Please describe the tests that you ran to verify your changes.
+## Testing
+Please describe the tests you performed to verify your changes:
 
-- [ ] Test A
-- [ ] Test B
+- [ ] Token metadata updates correctly
+- [ ] Token information displays properly on DEX
+- [ ] Transaction verification on Solana Explorer
+- [ ] Local environment testing
+- [ ] Devnet testing
 
-## Checklist:
-- [ ] My code follows the style guidelines of this project
-- [ ] I have performed a self-review of my code
-- [ ] I have commented my code, particularly in hard-to-understand areas
-- [ ] I have made corresponding changes to the documentation
-- [ ] My changes generate no new warnings
-- [ ] Any dependent changes have been merged and published
+## Checklist
+- [ ] Code follows project style guidelines
+- [ ] Self-review completed
+- [ ] Documentation has been updated
+- [ ] Tests added for changes
+- [ ] All tests passing
+- [ ] Dependent changes merged
 
-## Screenshots (if appropriate):
+## Token Information (if applicable)
+- Mint Address: 
+- Token Account: 
+- Network: (Devnet/Mainnet)
+- Metadata URI:
 
-## Additional context
+## Screenshots
+If applicable, add screenshots to demonstrate your changes.
+
+## Additional Context
 Add any other context about the pull request here.
