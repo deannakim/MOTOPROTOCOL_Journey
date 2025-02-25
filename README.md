@@ -25,3 +25,7 @@ Detailed documentation can be found in the [docs](./docs) directory:
 
 ## 📝 License
 [License information]
+
+## Contribution Guidelines
+
+At this time, we are not accepting external contributions. This project is managed by our internal team, and any contributions will be reviewed and considered in future updates. Thank you for your interest!
