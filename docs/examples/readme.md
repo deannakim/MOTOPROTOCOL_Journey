@@ -79,9 +79,9 @@ The `check-balance.ts` example covers querying token balances across multiple ac
 
 These examples were developed as part of a broader learning journey documented in the `/docs/journey/` directory. Key insights include:
 
-- **Environment Setup Challenges:** Overcoming Solana toolchain configuration issues (see `../journey/environment-setup.md`)
-- **Debugging Process:** Real-world troubleshooting of RPC connection and transaction errors (see `../journey/debugging-notes.md`)
-- **Non-Developer Perspective:** Approaching blockchain development from a DevRel viewpoint (see `../journey/lessons-learned.md`)
+- **Environment Setup Challenges:** Overcoming Solana toolchain configuration issues (see `../../docs/journey/environment-setup.md`)
+- **Debugging Process:** Real-world troubleshooting of RPC connection and transaction errors (see `../../docs/journey/debugging-notes.md`)
+- **Non-Developer Perspective:** Approaching blockchain development from a DevRel viewpoint (see `../../docs/journey/lessons-learned.md`)
 
 ## Troubleshooting
 
@@ -91,7 +91,7 @@ Common issues and solutions:
 - **Insufficient SOL:** Get free SOL from https://solfaucet.com for Devnet testing
 - **Token Account Not Found:** The recipient may not have an associated token account yet; our examples handle this automatically
 
-For more detailed troubleshooting, see `../guides/troubleshooting.md`.
+For more detailed troubleshooting, see `../../docs/guides/troubleshooting.md`.
 
 ## Related Resources
 
@@ -104,22 +104,24 @@ For more detailed troubleshooting, see `../guides/troubleshooting.md`.
 These basic examples are complemented by more advanced implementations:
 
 - **Batch Processing:** See `../advanced/batch-process.ts` for handling multiple transactions
-- **Test Examples:** Explore test implementations in `../tests/`
 
 ## Project Structure
 
 The MOTO PROTOCOL project is organized as follows:
 
 ```
+├── examples/
+│   ├── advanced/                  # Advanced implementation examples
+│   │   └── batch-process.ts       # Batch processing example
+│   └── basic/                     # Basic examples (current directory)
+│       ├── check-balance.ts       # Token balance checker
+│       ├── token-info.ts          # Token information retriever
+│       └── transfer-tokens.ts     # Token transfer utility
+│
 ├── docs/
 │   ├── journey/                   # DevRel experience highlights
 │   ├── guides/                    # User-friendly guides
 │   └── resources/                 # Reference materials
-│
-├── examples/
-│   ├── advanced/                  # Advanced implementation examples
-│   ├── basic/                     # Basic examples (current directory)
-│   └── tests/                     # Test implementations
 │
 └── technical/                     # Technical documentation
 ```
