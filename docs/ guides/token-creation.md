@@ -1,162 +1,172 @@
 # Token Creation Guide
 
-This guide walks you through creating a Solana SPL token using the required development environment and Solana CLI tools. You will learn how to configure your environment, generate keypairs, and create a new SPL token on the Solana network.
+This guide walks you through creating a Solana SPL token using the required development environment and Solana CLI tools.
 
-## 1. Overview
-In this guide, we will:
-- Verify the environment setup (Node.js, pnpm, Solana CLI)
-- Generate or load a Solana keypair
-- Create a new SPL token using the spl-token CLI
-- Optionally mint tokens and view balances
+## Prerequisites
 
-> Note: Before proceeding, ensure you have completed the Setup Guide or followed the instructions in the main README to configure Node.js (LTS), pnpm, and the Solana CLI.
+Before starting, ensure you have:
+- Node.js (LTS version 16 or 18)
+- PNPM or NPM
+- Solana CLI tools
+- Basic understanding of Solana wallets and keypairs
 
-## 2. Prerequisites
+![Node Version Check](../../.github/images/setup/environment-setup-node-versions.png)
+*Verify your Node.js version is compatible*
 
-### Node.js (LTS)
-- Recommended: Node 18.x (or Node 16.x if using an older pnpm version)
-- You can manage Node versions using nvm on Windows
+## Environment Setup
 
-### pnpm
-- Make sure pnpm is installed and compatible with your Node version
-- For Node 18+, pnpm 9.x or higher is typically supported
-- For Node 16, you may need to install an older pnpm (e.g., pnpm@7)
+### 1. Verify Node.js and Package Manager
 
-### Solana CLI
-- Download and install the Solana CLI from the official docs
-- Verify with:
 ```bash
-solana --version
-solana config get
-```
-
-### Keypair
-- You can generate a new keypair using `solana-keygen new` or locate your existing keypair (e.g., `~/.config/solana/id.json` on Linux/macOS or `C:\Users\<username>\.config\solana\id.json` on Windows)
-
-## 3. Environment Verification
-
-### Check Node & pnpm
-```bash
+# Check Node.js version
 node -v
+
+# Verify PNPM installation
 pnpm -v
 ```
-If you encounter a version mismatch (e.g., your pnpm requires Node 18+), switch Node versions via nvm or install a compatible pnpm version.
 
-### Check Solana CLI
+![Package Manager Setup](../../.github/images/setup/package-manager-setup.png)
+*Ensure your package manager is properly configured*
+
+### 2. Install Dependencies
+
+If you encounter any installation issues:
+
 ```bash
-solana --version
-solana config get
+# Install specific PNPM version if needed
+npm uninstall -g pnpm
+npm install -g pnpm@7
 ```
-Confirm you are on the correct RPC URL (devnet, testnet, or mainnet) and have a valid keypair path.
 
-### Clone the Repository (Optional)
-If you need the Metaplex JS codebase or this project's monorepo structure:
+![PNPM Install Error](../../.github/images/setup/pnpm-install-error.png)
+*Troubleshooting package manager installation*
+
+### 3. Project Structure Setup
+
+Organize your files properly:
+```
+my-token-project/
+├── src/
+│   └── create-token.ts
+├── dist/
+├── package.json
+└── tsconfig.json
+```
+
+![File Structure](../../.github/images/setup/file-structure-setup.png)
+*Proper project structure organization*
+
+## Token Creation Process
+
+### 1. Build Configuration
+
+Ensure your build configuration is correct:
+
 ```bash
-git clone https://github.com/<your-org>/moto-protocol.git
-cd moto-protocol
 pnpm install
 pnpm run build
 ```
-This step may vary depending on your actual repository structure.
 
-## 4. Creating a New SPL Token
+![Build Process](../../.github/images/setup/pnpm-build-error.png)
+*Handle any build configuration issues*
 
-### 4.1 Generate or Load a Keypair
-If you don't already have a Solana keypair, generate one:
+### 2. Create SPL Token
+
+```bash
+# Create new token
+spl-token create-token
+
+# Create token account
+spl-token create-account <TOKEN_MINT_ADDRESS>
+
+# Mint initial supply
+spl-token mint <TOKEN_MINT_ADDRESS> <AMOUNT>
+```
+
+![Build Success](../../.github/images/setup/build-error-resolved.png)
+*Successful token creation process*
+
+## Step-by-Step Guide
+
+### 1. Generate Keypair
 ```bash
 solana-keygen new --outfile ~/.config/solana/id.json
 ```
-> Tip: Use a secure passphrase and back up your keypair file.
 
-### 4.2 Create the SPL Token
-With the Solana CLI installed, you can create a new token using the spl-token command:
+### 2. Create Token
 ```bash
 spl-token create-token
-```
-This command outputs a token mint address, which identifies your newly created token on the Solana network.
-
-Example output:
-```makefile
-Creating token ...
-Token: <YourMintAddressHere>
+# Output: Creating token...
+# Token: <YOUR_TOKEN_MINT_ADDRESS>
 ```
 
-### 4.3 Create a Token Account (Optional)
-If you want to hold or receive tokens in your wallet, create an associated token account:
+### 3. Create Token Account
 ```bash
-spl-token create-account <YourMintAddressHere>
-```
-This associates the new token with your current Solana wallet.
-
-Example output:
-```makefile
-Creating account ...
-Account: <YourTokenAccountAddressHere>
+spl-token create-account <YOUR_TOKEN_MINT_ADDRESS>
+# Output: Creating account...
+# Account: <YOUR_TOKEN_ACCOUNT>
 ```
 
-### 4.4 Mint Tokens (Optional)
-To mint tokens to your newly created account:
+### 4. Mint Tokens
 ```bash
-spl-token mint <YourMintAddressHere> 1000 <YourTokenAccountAddressHere>
+spl-token mint <YOUR_TOKEN_MINT_ADDRESS> 1000
+# Output: Minting 1000 tokens
 ```
-This example mints 1,000 tokens to the specified token account.
-You can mint more (or fewer) tokens as needed.
 
-### 4.5 Check Balances
-Use the spl-token CLI to verify token balances:
+### 5. Verify Balance
 ```bash
-spl-token balance <YourMintAddressHere>
+spl-token balance <YOUR_TOKEN_MINT_ADDRESS>
 spl-token accounts
 ```
-- `balance` shows how many tokens exist in a specific account
-- `accounts` lists all SPL token accounts owned by your wallet
 
-## 5. Example Workflow
-1. Generate a keypair
-```bash
-solana-keygen new
-```
+## Troubleshooting
 
-2. Create a token
-```bash
-spl-token create-token
-```
+### Common Issues
 
-3. Create an associated account
-```bash
-spl-token create-account <MintAddress>
-```
+1. **Node Version Conflicts**
+   - Use nvm to switch Node versions
+   - Ensure PNPM compatibility
 
-4. Mint tokens
-```bash
-spl-token mint <MintAddress> 1000 <TokenAccountAddress>
-```
+2. **Build Errors**
+   - Check TypeScript configuration
+   - Verify dependencies
+   - Confirm file paths
 
-5. Check balances
-```bash
-spl-token accounts
-spl-token balance <MintAddress>
-```
+3. **Solana CLI Issues**
+   - Verify network connection
+   - Check wallet balance
+   - Confirm RPC endpoint
 
-## 6. Common Issues & Troubleshooting
+## Best Practices
 
-### Node.js version or pnpm mismatch
-- Switch Node versions with `nvm use <version>` or install a pnpm version compatible with Node 16 or 18
+1. **Environment Management**
+   - Use LTS Node versions
+   - Match PNPM version with Node
+   - Keep CLI tools updated
 
-### Resource in use error when deleting folders
-- Close all terminals or file explorer windows that may be locking the folder
-- Use an elevated PowerShell (Administrator mode) if necessary
+2. **Security**
+   - Backup keypairs
+   - Use separate development wallets
+   - Test on devnet first
 
-### Cannot find metaplex/js/packages/cli
-- Make sure you cloned the correct repository if you need the Metaplex CLI
-- If you only need the JS SDK, clone metaplex-foundation/js
+3. **Development Flow**
+   - Document mint addresses
+   - Track token accounts
+   - Monitor transactions
 
-For more detailed troubleshooting, see [Troubleshooting](../troubleshooting.md) or refer to the gtp-process logs for step-by-step environment fixes.
+## Next Steps
 
-## 7. Next Steps
-Once your SPL token is created, you can:
-- Set up metadata using the [Metadata Setup Guide](./metadata-setup.md)
-- List the token on a DEX (e.g., Raydium) using the [DEX Listing Guide](./dex-listing.md)
-- Explore advanced features like Marketing Automation or on-chain programs integrated with your token
+1. [Set up token metadata](./metadata-setup.md)
+2. Configure token properties
+3. Deploy to mainnet
+4. Add to liquidity pools
 
-Congratulations! You have successfully created a Solana SPL token. If you encounter any issues, please consult the [Troubleshooting](../troubleshooting.md) page or the project's [FAQ](../faq.md).
+## Resources
+
+- [Solana CLI Tools](https://docs.solana.com/cli)
+- [SPL Token Program](https://spl.solana.com/token)
+- [Metaplex Documentation](https://docs.metaplex.com/)
+
+---
+
+> **Note:** For detailed troubleshooting, refer to our [debugging notes](../journey/debugging-notes.md) and [lessons learned](../journey/lessons-learned.md).
