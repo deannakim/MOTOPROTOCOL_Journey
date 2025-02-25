@@ -7,7 +7,7 @@ This document details the debugging journey and solutions encountered while sett
 ### Issue
 Initial build attempts failed due to Node.js version incompatibility.
 
-![Node Version Check](../../.github/images/setup/01-node-version.png)
+![Node Version Check](../../.github/images/setup/environment-setup-node-versions.png)
 
 ### Solution
 - Switched from Node.js 22.13.1 to v16.20.0 using nvm
@@ -18,46 +18,82 @@ Initial build attempts failed due to Node.js version incompatibility.
 - Use nvm for easy version switching
 - Document version-specific dependencies
 
-## 2. Project Structure Issues
+## 2. Package Manager Issues
+
+### Issue
+PNPM installation and version conflicts caused build failures.
+
+![Package Manager Setup](../../.github/images/setup/package-manager-setup.png)
+
+### Solution
+- Uninstalled global PNPM
+- Installed specific PNPM version (7.x)
+- Verified compatibility with Node.js version
+
+### Key Learnings
+- Match PNPM version with Node.js version
+- Use version-specific installations
+- Document dependency relationships
+
+## 3. PNPM Installation Errors
+
+### Issue
+Encountered workspace protocol and dependency resolution errors.
+
+![PNPM Install Error](../../.github/images/setup/pnpm-install-error.png)
+
+### Solution
+- Resolved workspace protocol issues
+- Fixed dependency conflicts
+- Updated PNPM configuration
+
+### Key Learnings
+- Understand workspace protocols
+- Check for dependency conflicts
+- Maintain clear configuration
+
+## 4. Build Process Errors
+
+### Issue
+Build process failed with various configuration errors.
+
+![PNPM Build Error](../../.github/images/setup/pnpm-build-error.png)
+
+### Solution
+- Corrected TypeScript configuration
+- Updated build scripts
+- Fixed path references
+
+## 5. File Structure Issues
 
 ### Issue
 TypeScript compilation failed due to incorrect file organization.
 
-![Project Structure](../../.github/images/setup/02-project-structure.png)
+![File Structure Setup](../../.github/images/setup/file-structure-setup.png)
 
 ### Solution
 - Created proper directory structure (src/, dist/)
 - Updated tsconfig.json paths
 - Reorganized TypeScript files
 
-### Key Learnings
-- Maintain clear separation between source and compiled files
-- Follow TypeScript project structure best practices
-- Keep configuration files in sync with directory structure
-
-## 3. Build Process Errors
+## 6. Distribution Folder Issues
 
 ### Issue
-Build process failed with various dependency and configuration errors.
+Build process couldn't locate or generate distribution files correctly.
 
-![Build Error](../../.github/images/setup/03-build-error.png)
+![Dist Build Error](../../.github/images/setup/dist-build-error.png)
 
 ### Solution
-- Aligned PNPM version (7.x) with Node.js version
-- Fixed workspace dependencies
-- Corrected TypeScript configuration
+- Corrected output directory configuration
+- Fixed file path references
+- Updated build scripts
 
-### Key Learnings
-- Version alignment is crucial (Node.js ↔ PNPM)
-- Check for workspace protocol support
-- Verify all peer dependencies
+## 7. Final Resolution
 
-## 4. Final Success
-
-### Resolution
+### Success
 After addressing all issues, achieved successful build.
 
-![Build Success](../../.github/images/setup/04-build-success.png)
+![Build Success](../../.github/images/setup/build-error-resolved.png)
 
 ### Key Learnings
 - Systematic debugging approach works best
