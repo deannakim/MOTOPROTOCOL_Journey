@@ -19,17 +19,15 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.7.3"
   },
-
-"scripts": {
-  "build": "tsc",
-  "start": "ts-node src/index.ts",
-  "test": "jest",
-  "batch": "ts-node docs/examples/advanced/batch-process.ts",
-  "example:balance": "ts-node docs/examples/basic/check-balance.ts",
-  "example:info": "ts-node docs/examples/basic/token-info.ts",
-  "example:transfer": "ts-node docs/examples/basic/transfer-tokens.ts"
-}
-  
+  "scripts": {
+    "build": "tsc",
+    "start": "ts-node src/index.ts",
+    "test": "jest",
+    "batch": "ts-node docs/examples/advanced/batch-process.ts",
+    "example:balance": "ts-node docs/examples/basic/check-balance.ts",
+    "example:info": "ts-node docs/examples/basic/token-info.ts",
+    "example:transfer": "ts-node docs/examples/basic/transfer-tokens.ts"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/MOTOPROTOCOL/MOTOPROTOCOL_Journey.git"
