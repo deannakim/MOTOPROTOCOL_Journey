@@ -1,5 +1,3 @@
-#!/usr/bin/env ts-node
-
 /**
  * MOTO PROTOCOL Wallet Balance Checker
  *
@@ -30,9 +28,6 @@
  * Example Output:
  *   Wallet balance: 1.00000000 SOL, MTP: 0
  */
-
-// ... rest of the code ...
-#!/usr/bin/env ts-node
 
 import { createUmi } from '@metaplex-foundation/umi-bundle-defaults';
 import { publicKey, keypairIdentity } from '@metaplex-foundation/umi';
