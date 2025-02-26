@@ -31,7 +31,6 @@
     "example:transfer": "ts-node docs/examples/basic/transfer-tokens.ts",
     "mint:test-tokens": "ts-node docs/examples/basic/mint-test-tokens.ts"
   },
-}
   "repository": {
     "type": "git",
     "url": "git+https://github.com/MOTOPROTOCOL/MOTOPROTOCOL_Journey.git"
