@@ -13,21 +13,26 @@
     "chalk": "^4.1.2"
   },
   "devDependencies": {
-    "ts-node": "^10.9.2",
-    "typescript": "^5.7.3",
     "@types/node": "*",
     "jest": "^29.0.0",
-    "ts-jest": "^29.0.0"
+    "ts-jest": "^29.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
   },
-  "scripts": {
-    "build": "tsc",
-    "start": "ts-node src/index.ts",
-    "test": "jest",
-    "batch": "ts-node examples/advanced/batch-process.ts"
-  },
+
+"scripts": {
+  "build": "tsc",
+  "start": "ts-node src/index.ts",
+  "test": "jest",
+  "batch": "ts-node docs/examples/advanced/batch-process.ts",
+  "example:balance": "ts-node docs/examples/basic/check-balance.ts",
+  "example:info": "ts-node docs/examples/basic/token-info.ts",
+  "example:transfer": "ts-node docs/examples/basic/transfer-tokens.ts"
+}
+  
   "repository": {
     "type": "git",
-    "url": "https://github.com/MOTOPROTOCOL/MOTOPROTOCOL_Journey.git"
+    "url": "git+https://github.com/MOTOPROTOCOL/MOTOPROTOCOL_Journey.git"
   },
   "keywords": [
     "solana",
@@ -36,5 +41,12 @@
     "moto-protocol",
     "devrel"
   ],
-  "author": "MOTOPROTOCOL"
+  "author": "MOTOPROTOCOL",
+  "bugs": {
+    "url": "https://github.com/MOTOPROTOCOL/MOTOPROTOCOL_Journey/issues"
+  },
+  "homepage": "https://github.com/MOTOPROTOCOL/MOTOPROTOCOL_Journey#readme",
+  "directories": {
+    "doc": "docs"
+  }
 }
