@@ -6,38 +6,9 @@
  * This script implements a batch process for managing MOTO PROTOCOL tokens on Solana.
  * It demonstrates how to automate common token management tasks using Metaplex Umi.
  *
- * Prerequisites:
- * - Node.js v16+ and npm/yarn installed
- * - Required dependencies:
- *   - chalk: "^4.1.2"
- *   - ts-node: "^10.9.1"
- *   - typescript: "^4.9.0"
- *   - @types/node: "^18.0.0"
- *   - @metaplex-foundation/umi: "^0.8.9"
- *   - @metaplex-foundation/umi-bundle-defaults: "^0.8.9"
- *   - @solana/web3.js: "^1.78.0"
- *   - @solana/spl-token: "^0.3.8"
- * - src/ directory with the following scripts:
- *   - check-wallet.ts: Checks wallet balance (uses WALLET_FILE env var)
- *     Example output: "Wallet balance: 3.38845844 SOL, MTP: 18,446,744,073.709551615"
- *   - check-metadata.ts: Retrieves token metadata (uses TOKEN_ADDRESS env var)
- *     Example output: "Token: MOTO PROTOCOL (MTP), URI: https://..."
- *   - update-metadata.ts: Updates token metadata (uses TOKEN_ADDRESS and WALLET_FILE env vars)
- *     Example output: "Metadata updated successfully for token MTP"
- *   - simple-token-transfer.ts: Transfers tokens (uses TOKEN_ADDRESS and WALLET_FILE env vars)
- *     Example output: "Transferred 1000 MTP to recipient address"
- *   - check-token-info.ts: Displays token info (uses TOKEN_ADDRESS env var)
- *     Example output: "Supply: 18,446,744,073,709,551,615, Decimals: 9, Mint Authority: ..."
- *
- * Installation:
- * npm install chalk@4.1.2 ts-node@10.9.1 typescript@4.9.0 @types/node@18.0.0 \
- *   @metaplex-foundation/umi@0.8.9 @metaplex-foundation/umi-bundle-defaults@0.8.9 \
- *   @solana/web3.js@1.78.0 @solana/spl-token@0.3.8
- * 
  * Usage:
  *   ts-node batch-process.ts                    # Run all tasks sequentially
  *   ts-node batch-process.ts --parallel         # Run tasks in parallel
- *                                               # (Note: Some tasks may have dependencies on others)
  *   ts-node batch-process.ts --task=metadata    # Run only metadata-related tasks
  *   ts-node batch-process.ts --task=transfer    # Run only transfer-related tasks
  *   ts-node batch-process.ts --token=<address>  # Specify custom token address
@@ -62,37 +33,152 @@ interface Task {
   description: string;
   category: 'metadata' | 'transfer' | 'check' | 'other';
   dependsOn?: string[]; // Names of tasks this task depends on
+  filePath: string;     // 실제 실행할 파일의 경로
 }
 
-// Default Token address - MOTO PROTOCOL (MTP) token
-const DEFAULT_TOKEN_ADDRESS = "GccSrdDCs28Up6W8BdqDUwpSbJUAg2LXPRKPeQsNx6h";
+// Default Token address - Test Token
+const DEFAULT_TOKEN_ADDRESS = "YLf4BdNj1iiKiroGLGELNZrZQP9JtGGDkDfDcYLNiR1";
 
 // Wallet configuration
-const WALLET_FILE = "./my_wallet.json"; // Current wallet with address 7L7C9RB8Y6RtChco9QGgf8mo7wNiM7HFwHe4vWC7jLwH
+const WALLET_FILE = "./test-wallet.json"; // Test wallet for development
 
-// Define tasks based on available scripts in the src directory
+// Define tasks based on available scripts
 const tasks: Task[] = [
   { 
     name: 'Check Wallet Balance', 
-    command: 'ts-node ./src/check-wallet.ts', // Using relative path with ./ prefix
-    description: 'Checks wallet balance and token holdings (uses WALLET_FILE env var)',
-    category: 'check'
+    command: 'ts-node docs/examples/basic/check-balance.ts',
+    description: 'Checks wallet balance and token holdings',
+    category: 'check',
+    filePath: 'docs/examples/basic/check-balance.ts'
   },
   { 
-    name: 'Check Token Metadata', 
-    command: `ts-node ./src/check-metadata.ts`, // Using relative path with ./ prefix
-    description: 'Retrieves and displays current token metadata (uses TOKEN_ADDRESS env var)',
-    category: 'metadata'
+    name: 'Simple Token Transfer', 
+    // 인자를 전달하여 프롬프트 없이 진행: "1" 토큰, "GzeQMMzrZdhg2h4CctUFBDGUmv1R6uJY1LdAGSvpBhp" 수신자
+    command: 'ts-node docs/examples/basic/transfer-tokens.ts 1 GzeQMMzrZdhg2h4CctUFBDGUmv1R6uJY1LdAGSvpBhp',
+    description: 'Transfers tokens',
+    category: 'transfer',
+    filePath: 'docs/examples/basic/transfer-tokens.ts'
   },
   { 
-    name: 'Update Token Metadata', 
-    command: 'ts-node ./src/update-metadata.ts', // Using relative path with ./ prefix
-    description: 'Updates token metadata with latest information (uses TOKEN_ADDRESS and WALLET_FILE env vars)',
-    category: 'metadata',
-    dependsOn: ['Check Token Metadata'] // This task should run after checking metadata
-  },
-  { 
-...(about 221 lines omitted)...
+    name: 'Check Token Info', 
+    command: 'ts-node docs/examples/basic/token-info.ts',
+    description: 'Displays token info',
+    category: 'check',
+    filePath: 'docs/examples/basic/token-info.ts'
+  }
+];
+
+// Utility function to log messages to a file if logging is enabled
+function logToFile(message: string, disableLog: boolean): void {
+  if (!disableLog) {
+    fs.appendFileSync(LOG_FILE, message + "\n");
+  }
+}
+
+// Filter out tasks whose script files do not exist
+function filterExistingTasks(tasks: Task[]): Task[] {
+  return tasks.filter(task => {
+    if (!fs.existsSync(task.filePath)) {
+      console.log(chalk.yellow(`Script file not found: ${task.filePath}`));
+      logToFile(`Script file not found: ${task.filePath}`, false);
+      return false;
+    }
+    return true;
+  });
+}
+
+// Filter tasks by category
+function filterTasksByCategory(tasks: Task[], category: string): Task[] {
+  return tasks.filter(task => task.category === category);
+}
+
+// Check dependencies among tasks (현재는 경고만 출력)
+function checkDependencies(tasks: Task[], parallel: boolean, respectDependencies: boolean): void {
+  for (const task of tasks) {
+    if (task.dependsOn) {
+      for (const dep of task.dependsOn) {
+        const exists = tasks.some(t => t.name === dep);
+        if (!exists) {
+          console.log(chalk.yellow(`Warning: Task "${task.name}" depends on "${dep}" which is not in the task list.`));
+          logToFile(`Warning: Task "${task.name}" depends on "${dep}" which is not in the task list.`, false);
+        }
+      }
+    }
+  }
+}
+
+// Execute tasks in parallel with timing
+async function runInParallel(tasks: Task[], targetToken: string, continueOnError: boolean, disableLog: boolean, respectDependencies: boolean): Promise<void> {
+  const taskStartTimes = new Map<string, number>();
+  
+  await Promise.all(tasks.map(async (task) => {
+    taskStartTimes.set(task.name, Date.now());
+    console.log(chalk.cyan(`\n[${new Date().toISOString()}] Starting task: ${task.name}`));
+    logToFile(`Starting task: ${task.name}`, disableLog);
+    
+    try {
+      const { stdout, stderr } = await execAsync(task.command);
+      const taskDuration = ((Date.now() - taskStartTimes.get(task.name)!) / 1000).toFixed(2);
+      console.log(chalk.green(`✓ Task "${task.name}" completed in ${taskDuration}s`));
+      console.log(chalk.gray('Output:', stdout));
+      
+      logToFile(`Task "${task.name}" completed in ${taskDuration}s`, disableLog);
+      logToFile(`Output: ${stdout}`, disableLog);
+      
+      if (stderr) {
+        console.log(chalk.yellow(`Warning output: ${stderr}`));
+        logToFile(`Warning output: ${stderr}`, disableLog);
+      }
+    } catch (error) {
+      const taskDuration = ((Date.now() - taskStartTimes.get(task.name)!) / 1000).toFixed(2);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.error(chalk.red(`✗ Task "${task.name}" failed after ${taskDuration}s`));
+      console.error(errorMessage);
+      
+      logToFile(`Task "${task.name}" failed after ${taskDuration}s: ${errorMessage}`, disableLog);
+      
+      if (!continueOnError) {
+        throw error;
+      }
+    }
+  }));
+}
+
+// Execute tasks sequentially with timing
+async function runSequentially(tasks: Task[], targetToken: string, continueOnError: boolean, disableLog: boolean): Promise<void> {
+  for (const task of tasks) {
+    const taskStartTime = Date.now();
+    console.log(chalk.cyan(`\n[${new Date().toISOString()}] Starting task: ${task.name}`));
+    logToFile(`Starting task: ${task.name}`, disableLog);
+    
+    try {
+      const { stdout, stderr } = await execAsync(task.command);
+      const taskDuration = ((Date.now() - taskStartTime) / 1000).toFixed(2);
+      console.log(chalk.green(`✓ Task "${task.name}" completed in ${taskDuration}s`));
+      console.log(chalk.gray('Output:', stdout));
+      
+      logToFile(`Task "${task.name}" completed in ${taskDuration}s`, disableLog);
+      logToFile(`Output: ${stdout}`, disableLog);
+      
+      if (stderr) {
+        console.log(chalk.yellow(`Warning output: ${stderr}`));
+        logToFile(`Warning output: ${stderr}`, disableLog);
+      }
+    } catch (error) {
+      const taskDuration = ((Date.now() - taskStartTime) / 1000).toFixed(2);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.error(chalk.red(`✗ Task "${task.name}" failed after ${taskDuration}s`));
+      console.error(errorMessage);
+      
+      logToFile(`Task "${task.name}" failed after ${taskDuration}s: ${errorMessage}`, disableLog);
+      
+      if (!continueOnError) {
+        throw error;
+      }
+    }
+  }
+}
+
 async function main(): Promise<void> {
   // Parse command line arguments
   const parallel = process.argv.includes('--parallel');
@@ -114,26 +200,17 @@ async function main(): Promise<void> {
     }
     
     console.log(chalk.yellow('🚀 Starting MOTO PROTOCOL token management batch process...'));
-    console.log(chalk.cyan(`Target token: ${targetToken} ${targetToken === DEFAULT_TOKEN_ADDRESS ? '(MOTO PROTOCOL - MTP)' : ''}`));
-    console.log(chalk.cyan(`Using wallet: ${WALLET_FILE} (7L7C9RB8Y6RtChco9QGgf8mo7wNiM7HFwHe4vWC7jLwH)`));
+    console.log(chalk.cyan(`Target token: ${targetToken}`));
+    console.log(chalk.cyan(`Using wallet: ${WALLET_FILE}`));
     logToFile(`Starting batch process for token: ${targetToken}`, disableLog);
     logToFile(`Using wallet file: ${WALLET_FILE}`, disableLog);
     
-    // Verify that all script files exist
-    const scriptsExist = verifyScripts();
-    if (!scriptsExist) {
-      console.log(chalk.yellow('⚠️ Some script files are missing. Continuing with available scripts.'));
-      logToFile('Warning: Some script files are missing', disableLog);
-    }
-    
-    // Set environment variables
-    process.env.WALLET_FILE = WALLET_FILE;
-    process.env.TOKEN_ADDRESS = targetToken;
+    // Filter tasks to only include those with existing script files
+    let tasksToRun = filterExistingTasks(tasks);
     
     // Filter tasks if a category is specified
-    let tasksToRun = tasks;
     if (taskCategory) {
-      tasksToRun = filterTasksByCategory(tasks, taskCategory);
+      tasksToRun = filterTasksByCategory(tasksToRun, taskCategory);
       console.log(chalk.cyan(`Filtered to ${tasksToRun.length} tasks in category: ${taskCategory}`));
       logToFile(`Filtered to ${tasksToRun.length} tasks in category: ${taskCategory}`, disableLog);
       
@@ -145,7 +222,7 @@ async function main(): Promise<void> {
       }
     }
     
-    // Check for dependencies in parallel mode
+    // Check for dependencies
     checkDependencies(tasksToRun, parallel, respectDependencies);
     
     // Display task summary
@@ -166,12 +243,13 @@ async function main(): Promise<void> {
     }
     
     const totalDuration = ((Date.now() - startTime) / 1000).toFixed(2);
-    console.log(chalk.yellow(`✨ MOTO PROTOCOL token management batch process completed in ${totalDuration}s.`));
+    console.log(chalk.yellow(`✨ Batch process completed in ${totalDuration}s.`));
     logToFile(`Batch process completed successfully in ${totalDuration}s`, disableLog);
   } catch (error) {
     const failDuration = ((Date.now() - startTime) / 1000).toFixed(2);
-    console.error(chalk.red(`💥 Batch process failed after ${failDuration}s: ${error.message}`));
-    logToFile(`Batch process failed: ${error.message}`, disableLog);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error(chalk.red(`💥 Batch process failed after ${failDuration}s: ${errorMessage}`));
+    logToFile(`Batch process failed: ${errorMessage}`, disableLog);
     process.exit(1);
   }
 }
@@ -179,6 +257,5 @@ async function main(): Promise<void> {
 // Execute main function
 main().catch(error => {
   console.error(chalk.red('💥 Fatal error during batch process:'), error);
-  // Remove duplicate logging: Logging is already handled within the main() function, so it is unnecessary here
   process.exit(1);
 });
