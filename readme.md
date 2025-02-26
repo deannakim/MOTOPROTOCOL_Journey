@@ -16,8 +16,6 @@
 - **Prerequisites:** Node.js (latest LTS), npm, and Solana CLI.
 - **Step-by-step installation:** See [Setup Guide](./docs/setup-guide.md).
 
-// ... existing code ...
-
 ## 🧪 Test Environment Setup
 1. **Create Test Wallets**
    ```bash
@@ -61,7 +59,49 @@
    - Never use production wallets for testing
    - Keep your test wallet's private key secure
    - Test tokens have no real value and are for testing only
+// ... existing code ...
 
+## 🔧 Troubleshooting
+
+### Common Issues
+
+1. **Token Transfer Issues**
+   ```bash
+   Error: Insufficient balance. You have 0 tokens but tried to send 1.
+   ```
+   **Solution:**
+   - Check if your wallet has enough tokens
+   - Verify the token address is correct
+   - Make sure you're using the right wallet file
+   ```bash
+   # Verify token balance first
+   npm run example:balance
+   
+   # Then try transfer with correct parameters
+   npm run example:transfer -- <TOKEN_ADDRESS> <AMOUNT> <RECIPIENT>
+   ```
+
+2. **Script Path Errors**
+   ```bash
+   Script file not found: <filepath>
+   ```
+   **Solution:**
+   - Verify all example scripts are in the correct directory
+   - Check file permissions
+   - Make sure you're running from project root
+
+3. **Environment Setup**
+   - Always use test wallet for development
+   - Keep test tokens separate from production
+   - Use Devnet for testing
+
+### Best Practices
+1. Always check balances before transfers
+2. Use `--continue-on-error` flag for batch operations
+3. Test with small amounts first
+4. Keep logs for debugging (`--no-log` disables logging)
+
+For more detailed troubleshooting, see [Troubleshooting Guide](./docs/troubleshooting.md)
 
 ## 📖 Documentation
 
