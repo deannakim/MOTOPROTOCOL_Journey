@@ -8,25 +8,19 @@
  *
  * Prerequisites:
  * - Node.js v16+ and npm/yarn installed
- * - Required dependencies:
- *   - @metaplex-foundation/umi: "^0.8.9"
- *   - @metaplex-foundation/umi-bundle-defaults: "^0.8.9"
- *   - @solana/web3.js: "^1.78.0"
- *   - @solana/spl-token: "^0.3.8"
- *   - ts-node: "^10.9.1"
- *   - typescript: "^4.9.0"
- *   - @types/node: "^18.0.0"
- * - A wallet file (e.g., my_wallet.json) with a private key
+ * - Required dependencies (see package.json)
+ * - A Solana wallet file (DO NOT commit this to GitHub)
  *
- * Installation:
- * npm install @metaplex-foundation/umi@0.8.9 @metaplex-foundation/umi-bundle-defaults@0.8.9 \
- *   @solana/web3.js@1.78.0 @solana/spl-token@0.3.8 ts-node@10.9.1 typescript@4.9.0 @types/node@18.0.0
+ * Setup:
+ * 1. Create a test wallet: `solana-keygen new --outfile test-wallet.json`
+ * 2. Get SOL from faucet: `solana airdrop 1 [YOUR_WALLET_ADDRESS] --url devnet`
+ * 3. Rename test-wallet.json to my_wallet.json or update WALLET_PATH in .env
  *
  * Usage:
  *   ts-node check-balance.ts
  *
  * Example Output:
- *   Wallet balance: 3.38845844 SOL, MTP: 18,446,744,073.709551615
+ *   Wallet balance: 1.00000000 SOL, MTP: 0
  */
 
 import { createUmi } from '@metaplex-foundation/umi-bundle-defaults';
@@ -34,15 +28,27 @@ import { publicKey, keypairIdentity } from '@metaplex-foundation/umi';
 import { getAccount } from '@solana/spl-token';
 import { Connection, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import * as fs from 'fs';
+import * as path from 'path';
+import 'dotenv/config';
 
 // Configuration
-const WALLET_FILE = './my_wallet.json'; // Wallet with address 7L7C9RB8Y6RtChco9QGgf8mo7wNiM7HFwHe4vWC7jLwH
+const WALLET_PATH = process.env.WALLET_PATH || './my_wallet.json'; // Use .env or default path
 const TOKEN_ADDRESS = 'GccSrdDCs28Up6W8BdqDUwpSbJUAg2LXPRKPeQsNx6h'; // MOTO PROTOCOL (MTP)
 const RPC_ENDPOINT = 'https://api.devnet.solana.com'; // Solana Devnet
 
+// Wallet file check
+if (!fs.existsSync(WALLET_PATH)) {
+  console.error(`Error: Wallet file not found at ${WALLET_PATH}`);
+  console.log('\nPlease follow these steps:');
+  console.log('1. Create a test wallet: solana-keygen new --outfile test-wallet.json');
+  console.log('2. Rename test-wallet.json to my_wallet.json');
+  console.log('3. Add my_wallet.json to .gitignore');
+  process.exit(1);
+}
+
 // Initialize Umi and load wallet
 const umi = createUmi(RPC_ENDPOINT);
-const walletData = JSON.parse(fs.readFileSync(WALLET_FILE, 'utf-8'));
+const walletData = JSON.parse(fs.readFileSync(WALLET_PATH, 'utf-8'));
 const keypair = umi.eddsa.createKeypairFromSecretKey(new Uint8Array(walletData));
 umi.use(keypairIdentity(keypair));
 
