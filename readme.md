@@ -1,29 +1,38 @@
 # MOTO PROTOCOL SPL Token Project
 
 ## 📌 Quick Start
-1. **Environment Setup**
-   # Check required tools
-   node -v  # Node.js LTS version
-   npm -v   # npm version
-   solana -v # Solana CLI
+### Environment Setup
+Check required tools:
+node -v  # Node.js LTS version
+npm -v   # npm version
+solana -v # Solana CLI
 
-   # Project setup
-   git clone https://github.com/MOTOPROTOCOL/MOTOPROTOCOL_Journey.git
-   cd MOTOPROTOCOL_Journey
-   npm install
+Project setup:
+git clone https://github.com/MOTOPROTOCOL/MOTOPROTOCOL_Journey.git
+cd MOTOPROTOCOL_Journey
+npm install
 
-2. **Test Wallet Setup** (for development)
-   # Create test wallet for Devnet (NEVER commit to GitHub!)
-   solana-keygen new --outfile test-wallet.json
-   
-   # Get Devnet SOL
-   solana airdrop 1 [YOUR_WALLET_ADDRESS] --url devnet
+### Test Wallet Setup (for development)
+# Create test wallet for Devnet (NEVER commit to GitHub!)
+solana-keygen new --outfile test-wallet.json
+
+# Get Devnet SOL
+solana airdrop 1 [YOUR_WALLET_ADDRESS] --url devnet
+
+### Quick Usage Example
+# View token info and transfer tokens
+npm run example:info
+npm run example:transfer
 
 ## 🎯 Features
 - SPL Token Creation & Management
 - Metadata Configuration
 - DEX Listing
 - [Future] Marketing Automation
+
+## 🛠 Installation
+- Prerequisites: Node.js (LTS), npm, Solana CLI
+- Step-by-Step: Detailed instructions in [Setup Guide](docs/journey/environment-setup.md)
 
 ## 📖 Documentation
 ### DevRel Journey
@@ -37,25 +46,23 @@
 - [Troubleshooting Guide](docs/guides/troubleshooting.md)
 
 ### Technical Documentation
-- [Architecture Design](docs/technical/architecture.md)
-- [API Reference](docs/technical/api-reference.md)
-- [Development Log](docs/technical/process-log.md)
-- [Solana Programs Documentation](docs/technical/programs.md)
+- [Architecture Design](./technical/architecture.md)
+- [API Reference](./technical/api-reference.md)
+- [Development Log](./technical/process-log.md)
+- [Solana Programs Documentation](./technical/programs.md)
 
 ## 💻 Examples
-### Basic Examples
+Run basic examples:
 # Check balance
 npm run example:balance
-
 # View token info
 npm run example:info
-
 # Transfer tokens
 npm run example:transfer
 
-⚠️ **Security Notes**
+## ⚠️ Security Notes
 - NEVER commit private keys or wallet files to GitHub
-- Add to your `.gitignore`:
+- Add to your .gitignore:
   *.json
   !package.json
   !package-lock.json
