@@ -10,7 +10,9 @@
     "@metaplex-foundation/umi-bundle-defaults": "^1.0.0",
     "@solana/spl-token": "^0.4.12",
     "@solana/web3.js": "^1.98.0",
-    "chalk": "^4.1.2"
+    "@types/prompt-sync": "^4.2.3",
+    "chalk": "^4.1.2",
+    "prompt-sync": "^4.2.0"
   },
   "devDependencies": {
     "@types/node": "*",
@@ -26,8 +28,10 @@
     "batch": "ts-node docs/examples/advanced/batch-process.ts",
     "example:balance": "ts-node docs/examples/basic/check-balance.ts",
     "example:info": "ts-node docs/examples/basic/token-info.ts",
-    "example:transfer": "ts-node docs/examples/basic/transfer-tokens.ts"
+    "example:transfer": "ts-node docs/examples/basic/transfer-tokens.ts",
+    "mint:test-tokens": "ts-node docs/examples/basic/mint-test-tokens.ts"
   },
+}
   "repository": {
     "type": "git",
     "url": "git+https://github.com/MOTOPROTOCOL/MOTOPROTOCOL_Journey.git"
