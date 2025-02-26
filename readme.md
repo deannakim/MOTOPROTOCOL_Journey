@@ -1,82 +1,77 @@
 # MOTO PROTOCOL SPL Token Project
 
 ## 📌 Quick Start
-### Environment Setup
-Check required tools:
-node -v  # Node.js LTS version
-npm -v   # npm version
-solana -v # Solana CLI
-
-Project setup:
-git clone https://github.com/MOTOPROTOCOL/MOTOPROTOCOL_Journey.git
-cd MOTOPROTOCOL_Journey
-npm install
-
-### Test Wallet Setup (for development)
-# Create test wallet for Devnet (NEVER commit to GitHub!)
-solana-keygen new --outfile test-wallet.json
-
-# Get Devnet SOL
-solana airdrop 1 [YOUR_WALLET_ADDRESS] --url devnet
-
-### Quick Usage Example
-# View token info and transfer tokens
-npm run example:info
-npm run example:transfer
+- **Installation requirements:** Node.js, npm, Solana CLI, etc.
+- **Basic setup commands:** Environment configuration, token creation, and metadata setup.
+- **Quick usage example:** Running basic commands to create and list your SPL token.
 
 ## 🎯 Features
-- SPL Token Creation & Management
-- Metadata Configuration
+- SPL Token Creation
+- Metadata Management
 - DEX Listing
 - [Future] Marketing Automation
+// ... existing code ...
 
 ## 🛠 Installation
-- Prerequisites: Node.js (LTS), npm, Solana CLI
-- Step-by-Step: Detailed instructions in [Setup Guide](docs/journey/environment-setup.md)
+- **Prerequisites:** Node.js (latest LTS), npm, and Solana CLI.
+- **Step-by-step installation:** See [Setup Guide](./docs/setup-guide.md).
+
+## 🧪 Test Environment Setup
+1. **Create Test Wallet**
+   ```bash
+   # Create a new test wallet
+   solana-keygen new --outfile test-wallet.json
+
+   # Get SOL from Devnet faucet
+   solana airdrop 1 $(solana-keygen pubkey test-wallet.json) --url devnet
+   ```
+
+2. **Environment Configuration**
+   ```bash
+   # Create .env file in project root
+   RPC_URL=https://api.devnet.solana.com
+   WALLET_FILE=./test-wallet.json
+   ```
+
+3. **Run Examples**
+   ```bash
+   # Check wallet balance
+   npm run example:balance
+
+   # Get token info
+   npm run example:info
+
+   # Transfer tokens (requires recipient address)
+   npm run example:transfer
+   ```
+
+4. **Security Notes**
+   - Add `test-wallet.json` and `.env` to `.gitignore`
+   - Never use production wallets for testing
+   - Keep your test wallet's private key secure
 
 ## 📖 Documentation
-### DevRel Journey
-- [Environment Setup Story](docs/journey/environment-setup.md)
-- [Debugging Notes](docs/journey/debugging-notes.md)
-- [Lessons Learned](docs/journey/lessons-learned.md)
 
-### User Guides
-- [Token Creation Guide](docs/guides/token-creation.md)
-- [Metadata Setup](docs/guides/metadata-setup.md)
-- [Troubleshooting Guide](docs/guides/troubleshooting.md)
+Detailed documentation can be found in the [docs](./docs) directory:
+- **Guides:**
+  - [Token Creation Guide](./docs/guides/token-creation.md)
+  - [Metadata Setup](./docs/guides/metadata-setup.md)
+  - [DEX Listing Guide](./docs/guides/dex-listing.md)
+- **Technical:**
+  - [Architecture](./docs/technical/architecture.md)
+  - [API Reference](./docs/technical/api-reference.md)
+- **Troubleshooting:** [Troubleshooting](./docs/troubleshooting.md)
+- **FAQ:** [FAQ](./docs/faq.md) *(new)*
 
-### Technical Documentation
-- [Architecture Design](./technical/architecture.md)
-- [API Reference](./technical/api-reference.md)
-- [Development Log](./technical/process-log.md)
-- [Solana Programs Documentation](./technical/programs.md)
+## 📝 Testing
+Tests are run using Jest. For details, see [Testing Guidelines](./docs/guides/testing-guidelines.md).
 
-## 💻 Examples
-Run basic examples:
-# Check balance
-npm run example:balance
-# View token info
-npm run example:info
-# Transfer tokens
-npm run example:transfer
+## 📊 Roadmap
+Future updates and plans are outlined in [Roadmap](./docs/roadmap.md).
 
-## ⚠️ Security Notes
-- NEVER commit private keys or wallet files to GitHub
-- Add to your .gitignore:
-  *.json
-  !package.json
-  !package-lock.json
-  .env
-
-## 🛠 Development Environment
-- Node.js (LTS)
-- npm
-- Solana CLI
-- TypeScript
-- Jest (Testing)
-
-## 🤝 Contributing
-External contributions are currently not accepted.
+## 📝 Contribution
+*Contributions are currently not accepted.*
 
 ## 📝 License
-MIT License - Feel free to use this code for any purpose, including commercial use, modification, and distribution. Just keep the license notice intact.
+[License information]
+
