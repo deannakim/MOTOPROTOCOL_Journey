@@ -18,7 +18,7 @@
  *   - prompt-sync: Handles user input
  *
  * Installation:
- * 1. Create a .env file with RPC_URL (optional, defaults to Devnet)
+ * 1. Create a .env file with RPC_URL (optional, defaults to Devnet) and WALLET_FILE (optional)
  * 2. Run: npm install ts-node @solana/web3.js @solana/spl-token @metaplex-foundation/mpl-token-metadata dotenv chalk prompt-sync
  *
  * Usage:
@@ -37,7 +37,7 @@
 
 import { Connection, Keypair, PublicKey, Transaction, sendAndConfirmTransaction, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { getOrCreateAssociatedTokenAccount, createTransferInstruction, getMint, getAccount } from '@solana/spl-token';
-import { Metadata } from '@metaplex-foundation/mpl-token-metadata';
+import { fetchMetadata } from '@metaplex-foundation/mpl-token-metadata';
 import * as dotenv from 'dotenv';
 import * as fs from 'fs';
 import chalk from 'chalk';
@@ -60,7 +60,10 @@ try {
   const walletData = JSON.parse(fs.readFileSync(WALLET_FILE, 'utf-8'));
   keypair = Keypair.fromSecretKey(new Uint8Array(walletData));
 } catch (error) {
-  console.error(chalk.red(`Error loading wallet from ${WALLET_FILE}:`), error.message);
+  console.error(
+    chalk.red(`Error loading wallet from ${WALLET_FILE}:`),
+    error instanceof Error ? error.message : error
+  );
   console.log(chalk.yellow('Make sure your wallet file exists and contains a valid private key array.'));
   process.exit(1);
 }
@@ -70,6 +73,11 @@ const connection = new Connection(
   process.env.RPC_URL || 'https://api.devnet.solana.com',
   'confirmed'
 );
+
+// For fetchMetadata, we need to initialize Umi
+import { createUmi } from '@metaplex-foundation/umi-bundle-defaults';
+import { publicKey as toPublicKey } from '@metaplex-foundation/umi';
+const umi = createUmi(process.env.RPC_URL || 'https://api.devnet.solana.com');
 
 // Parse command line arguments
 let tokenAddress: string;
@@ -96,24 +104,23 @@ if (process.argv.length === 4) {
 
 // Validate inputs
 try {
-  const tokenPubkey = new PublicKey(tokenAddress);
-  const recipientPubkey = new PublicKey(recipientAddress);
+  new PublicKey(tokenAddress);
+  new PublicKey(recipientAddress);
   
   if (isNaN(amount) || amount <= 0) {
     throw new Error('Amount must be a positive number');
   }
 } catch (error) {
-  console.error(chalk.red('Invalid input:'), error.message);
+  console.error(chalk.red('Invalid input:'), error instanceof Error ? error.message : error);
   console.log(chalk.yellow('Usage: ts-node transfer-tokens.ts [TOKEN_ADDRESS] AMOUNT RECIPIENT_ADDRESS'));
   process.exit(1);
 }
 
-// Fetch token metadata from blockchain
+// Fetch token metadata using fetchMetadata
 async function fetchTokenMetadata(mint: PublicKey) {
   try {
-    const metadataPDA = await Metadata.getPDA(mint);
-    const metadataAccount = await Metadata.load(connection, metadataPDA);
-    return metadataAccount.data;
+    const metadata = await fetchMetadata(umi, toPublicKey(mint.toString()));
+    return metadata;
   } catch (error) {
     return null;
   }
@@ -145,7 +152,7 @@ async function transferTokens() {
     // Get token metadata
     const metadata = await fetchTokenMetadata(tokenPubkey);
     if (metadata) {
-      console.log(`Token: ${chalk.green(`${metadata.data.name} (${metadata.data.symbol})`)}`);
+      console.log(`Token: ${chalk.green(`${metadata.name} (${metadata.symbol})`)}`);
     } else {
       console.log(`Token: ${chalk.yellow(tokenAddress)}`);
     }
@@ -204,7 +211,7 @@ async function transferTokens() {
       senderTokenAccount.address,
       recipientTokenAccount.address,
       keypair.publicKey,
-      BigInt(Math.round(adjustedAmount)) // Using Math.round for better precision
+      BigInt(Math.round(adjustedAmount))
     );
     
     // Create and send transaction
@@ -223,7 +230,10 @@ async function transferTokens() {
     console.log(`\nYour new balance: ${chalk.green(newBalance.toString())} tokens`);
     
   } catch (error) {
-    console.error(chalk.red('\n❌ Transfer failed:'), error.message);
+    console.error(
+      chalk.red('\n❌ Transfer failed:'),
+      error instanceof Error ? error.message : error
+    );
     console.log(chalk.yellow('\nTroubleshooting tips:'));
     console.log('- Check that you have enough SOL to pay for transaction fees');
     console.log('- Verify the recipient address is correct');
