@@ -50,10 +50,11 @@ const prompt = promptSync({ sigint: true });
 dotenv.config();
 
 // Default token to use (MOTO PROTOCOL - MTP)
-const DEFAULT_TOKEN = 'GccSrdDCs28Up6W8BdqDUwpSbJUAg2LXPRKPeQsNx6h';
+const DEFAULT_TOKEN = 'YLf4BdNj1iiKiroGLGELNZrZQP9JtGGDkDfDcYLNiR1';
 
 // Wallet setup
-const WALLET_FILE = process.env.WALLET_FILE || './my_wallet.json';
+// 기본값을 './test-wallet.json'로 변경 (환경변수로 설정된 경우 우선 사용)
+const WALLET_FILE = process.env.WALLET_FILE || './test-wallet.json';
 let keypair: Keypair;
 
 try {
