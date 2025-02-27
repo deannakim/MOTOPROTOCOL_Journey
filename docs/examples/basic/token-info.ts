@@ -25,7 +25,7 @@ import { fetchMetadata } from '@metaplex-foundation/mpl-token-metadata';
 import chalk from 'chalk';
 
 // 기본 토큰 (MOTO PROTOCOL - MTP)
-const DEFAULT_TOKEN = 'GccSrdDCs28Up6W8BdqDUwpSbJUAg2LXPRKPeQsNx6h';
+const DEFAULT_TOKEN = 'YLf4BdNj1iiKiroGLGELNZrZQP9JtGGDkDfDcYLNiR1';
 // 커맨드라인 인자로부터 토큰 주소 받기
 const tokenAddress = process.argv[2] || DEFAULT_TOKEN;
 
