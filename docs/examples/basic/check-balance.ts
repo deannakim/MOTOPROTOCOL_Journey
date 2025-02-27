@@ -1,73 +1,41 @@
-/**
- * MOTO PROTOCOL Wallet Balance Checker
- *
- * This script checks the balance of a Solana wallet, including SOL and MTP token balances.
- * It serves as a basic example of interacting with the Solana blockchain using Metaplex Umi.
- *
- * Prerequisites:
- * - Node.js v18+ and npm installed
- * - Required dependencies (from package.json):
- *   - @metaplex-foundation/umi: "^1.0.0"
- *   - @metaplex-foundation/umi-bundle-defaults: "^1.0.0"
- *   - @solana/web3.js: "^1.98.0"
- *   - @solana/spl-token: "^0.4.12"
- *   - ts-node: "^10.9.2"
- *   - typescript: "^5.7.3"
- * - A Solana wallet file (e.g., test-wallet.json) with some devnet SOL
- *
- * Setup:
- * 1. Create a test wallet:
- *    solana-keygen new --outfile test-wallet.json
- * 
- * 2. Get devnet SOL:
- *    solana airdrop 1 <YOUR-WALLET-ADDRESS> --url devnet
- *
- * Usage:
- *   npm run example:balance
- *
- * Example Output:
- *   Wallet balance: 1.00000000 SOL, MTP: 0
- */
-
+// check-balance.ts
 import { createUmi } from '@metaplex-foundation/umi-bundle-defaults';
 import { publicKey, keypairIdentity } from '@metaplex-foundation/umi';
 import { getAccount } from '@solana/spl-token';
 import { Connection, LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import * as fs from 'fs';
+import { TOKEN_ADDRESS } from './config';
 
-// Configuration
-const WALLET_FILE = './test-wallet.json'; // 새로 생성한 지갑 파일 사용
-const TOKEN_ADDRESS = 'YLf4BdNj1iiKiroGLGELNZrZQP9JtGGDkDfDcYLNiR1'; // MOTO PROTOCOL (MTP)
-const RPC_ENDPOINT = 'https://api.devnet.solana.com'; // Solana Devnet
+const WALLET_FILE = './test-wallet.json'; // 지갑 파일 경로
+const RPC_ENDPOINT = 'https://api.devnet.solana.com'; // Devnet 엔드포인트
 
-// Initialize Umi and load wallet
+// Umi 초기화 및 지갑 로드
 const umi = createUmi(RPC_ENDPOINT);
 const walletData = JSON.parse(fs.readFileSync(WALLET_FILE, 'utf-8'));
 const keypair = umi.eddsa.createKeypairFromSecretKey(new Uint8Array(walletData));
 umi.use(keypairIdentity(keypair));
 
-// Solana Web3.js connection for SOL balance
+// Solana 연결 (SOL 잔액 확인용)
 const connection = new Connection(RPC_ENDPOINT, 'confirmed');
 
 async function checkBalance() {
   try {
-    // Check SOL balance
+    // SOL 잔액 체크
     const solBalance = await connection.getBalance(new PublicKey(umi.identity.publicKey.toString()));
     const solAmount = solBalance / LAMPORTS_PER_SOL;
 
-    // Check MTP token balance
+    // 지정된 토큰(TOKEN_ADDRESS)의 잔액 체크
     const tokenMint = publicKey(TOKEN_ADDRESS);
     const accounts = await umi.rpc.getAccounts([umi.identity.publicKey]);
-    const mtpAccount = accounts.find((acc: any) => acc?.data?.mint?.equals?.(tokenMint));
-    let mtpBalance = '0';
+    const tokenAccount = accounts.find((acc: any) => acc?.data?.mint?.equals?.(tokenMint));
+    let tokenBalance = '0';
     
-    if (mtpAccount) {
-      const accountInfo = await getAccount(connection, new PublicKey(mtpAccount.publicKey.toString()));
-      mtpBalance = (Number(accountInfo.amount) / 1e9).toLocaleString(); // Assuming 9 decimals
+    if (tokenAccount) {
+      const accountInfo = await getAccount(connection, new PublicKey(tokenAccount.publicKey.toString()));
+      tokenBalance = (Number(accountInfo.amount) / 1e9).toLocaleString(); // 9 소수점 기준
     }
 
-    // Output result
-    console.log(`Wallet balance: ${solAmount} SOL, MTP: ${mtpBalance}`);
+    console.log(`Wallet balance: ${solAmount} SOL, Token: ${tokenBalance}`);
   } catch (error: unknown) {
     if (error instanceof Error) {
       console.error('Error checking balance:', error.message);
@@ -78,5 +46,5 @@ async function checkBalance() {
   }
 }
 
-// Execute the function
+// 실행
 checkBalance();
