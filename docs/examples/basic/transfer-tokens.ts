@@ -1,40 +1,4 @@
-#!/usr/bin/env ts-node
-
-/**
- * Simple Solana Token Transfer Example
- *
- * This example demonstrates how to transfer SPL tokens on the Solana network.
- * It's designed for DevRel portfolios to show a clean implementation of token transfers.
- *
- * Prerequisites:
- * - Node.js v16+ installed
- * - Required packages:
- *   - ts-node: Runs TypeScript directly
- *   - @solana/web3.js: Connects to Solana
- *   - @solana/spl-token: Works with SPL tokens
- *   - @metaplex-foundation/mpl-token-metadata: Fetches token metadata
- *   - dotenv: Manages environment variables
- *   - chalk: Adds colors to console output
- *   - prompt-sync: Handles user input
- *
- * Installation:
- * 1. Create a .env file with RPC_URL (optional, defaults to Devnet) and WALLET_FILE (optional)
- * 2. Run: npm install ts-node @solana/web3.js @solana/spl-token @metaplex-foundation/mpl-token-metadata dotenv chalk prompt-sync
- *
- * Usage:
- * - Run: ts-node transfer-tokens.ts
- * - Or specify amount and recipient: ts-node transfer-tokens.ts AMOUNT RECIPIENT_ADDRESS
- * - Or specify token, amount and recipient: ts-node transfer-tokens.ts TOKEN_ADDRESS AMOUNT RECIPIENT_ADDRESS
- *
- * Example:
- *   ts-node transfer-tokens.ts 100 9ZNTfG4NyQgxy2SWjSiQoUyBPEvXT2xo7fKc5hPYYJ7b
- *
- * Safety Features:
- * - Confirmation prompt before sending
- * - Validation of addresses and amounts
- * - Clear success/error messages
- */
-
+// transfer-tokens.ts
 import { Connection, Keypair, PublicKey, Transaction, sendAndConfirmTransaction, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { getOrCreateAssociatedTokenAccount, createTransferInstruction, getMint, getAccount } from '@solana/spl-token';
 import { fetchMetadata } from '@metaplex-foundation/mpl-token-metadata';
@@ -42,18 +6,14 @@ import * as dotenv from 'dotenv';
 import * as fs from 'fs';
 import chalk from 'chalk';
 import promptSync from 'prompt-sync';
+import { createUmi } from '@metaplex-foundation/umi-bundle-defaults';
+import { publicKey as toPublicKey } from '@metaplex-foundation/umi';
+import { TOKEN_ADDRESS } from './config';
 
-// Setup prompt for user confirmation
 const prompt = promptSync({ sigint: true });
-
-// Load environment variables
 dotenv.config();
 
-// Default token to use (MOTO PROTOCOL - MTP)
-const DEFAULT_TOKEN = 'YLf4BdNj1iiKiroGLGELNZrZQP9JtGGDkDfDcYLNiR1';
-
-// Wallet setup
-// 기본값을 './test-wallet.json'로 변경 (환경변수로 설정된 경우 우선 사용)
+const DEFAULT_TOKEN = TOKEN_ADDRESS;
 const WALLET_FILE = process.env.WALLET_FILE || './test-wallet.json';
 let keypair: Keypair;
 
@@ -61,49 +21,36 @@ try {
   const walletData = JSON.parse(fs.readFileSync(WALLET_FILE, 'utf-8'));
   keypair = Keypair.fromSecretKey(new Uint8Array(walletData));
 } catch (error) {
-  console.error(
-    chalk.red(`Error loading wallet from ${WALLET_FILE}:`),
-    error instanceof Error ? error.message : error
-  );
+  console.error(chalk.red(`Error loading wallet from ${WALLET_FILE}:`), error instanceof Error ? error.message : error);
   console.log(chalk.yellow('Make sure your wallet file exists and contains a valid private key array.'));
   process.exit(1);
 }
 
-// Solana connection - use environment variable or default to Devnet
-const connection = new Connection(
-  process.env.RPC_URL || 'https://api.devnet.solana.com',
-  'confirmed'
-);
-
-// For fetchMetadata, we need to initialize Umi
-import { createUmi } from '@metaplex-foundation/umi-bundle-defaults';
-import { publicKey as toPublicKey } from '@metaplex-foundation/umi';
+const connection = new Connection(process.env.RPC_URL || 'https://api.devnet.solana.com', 'confirmed');
 const umi = createUmi(process.env.RPC_URL || 'https://api.devnet.solana.com');
 
-// Parse command line arguments
 let tokenAddress: string;
 let amount: number;
 let recipientAddress: string;
 
 if (process.argv.length === 4) {
-  // Format: ts-node transfer-tokens.ts AMOUNT RECIPIENT
+  // 형식: ts-node transfer-tokens.ts AMOUNT RECIPIENT_ADDRESS
   tokenAddress = DEFAULT_TOKEN;
   amount = parseFloat(process.argv[2]);
   recipientAddress = process.argv[3];
 } else if (process.argv.length === 5) {
-  // Format: ts-node transfer-tokens.ts TOKEN AMOUNT RECIPIENT
+  // 형식: ts-node transfer-tokens.ts TOKEN_ADDRESS AMOUNT RECIPIENT_ADDRESS
   tokenAddress = process.argv[2];
   amount = parseFloat(process.argv[3]);
   recipientAddress = process.argv[4];
 } else {
-  // Interactive mode
   console.log(chalk.cyan('=== Solana Token Transfer Tool ==='));
   tokenAddress = prompt(`Token address (press Enter for ${DEFAULT_TOKEN}): `) || DEFAULT_TOKEN;
   amount = parseFloat(prompt('Amount to send: '));
   recipientAddress = prompt('Recipient address: ');
 }
 
-// Validate inputs
+// 입력 값 검증
 try {
   new PublicKey(tokenAddress);
   new PublicKey(recipientAddress);
@@ -117,7 +64,6 @@ try {
   process.exit(1);
 }
 
-// Fetch token metadata using fetchMetadata
 async function fetchTokenMetadata(mint: PublicKey) {
   try {
     const metadata = await fetchMetadata(umi, toPublicKey(mint.toString()));
@@ -136,7 +82,7 @@ async function transferTokens() {
     
     const tokenPubkey = new PublicKey(tokenAddress);
     
-    // Check SOL balance for transaction fees
+    // SOL 잔액 체크 (수수료용)
     const solBalance = await connection.getBalance(keypair.publicKey);
     if (solBalance < 0.002 * LAMPORTS_PER_SOL) {
       console.error(chalk.red('Warning: Low SOL balance for transaction fees.'));
@@ -150,7 +96,7 @@ async function transferTokens() {
       }
     }
     
-    // Get token metadata
+    // 토큰 메타데이터 조회
     const metadata = await fetchTokenMetadata(tokenPubkey);
     if (metadata) {
       console.log(`Token: ${chalk.green(`${metadata.name} (${metadata.symbol})`)}`);
@@ -158,11 +104,10 @@ async function transferTokens() {
       console.log(`Token: ${chalk.yellow(tokenAddress)}`);
     }
     
-    // Get token decimals to calculate the actual amount
+    // 민트 정보 및 소수점 자리수 확인
     const mintInfo = await getMint(connection, tokenPubkey);
     const decimals = mintInfo.decimals;
     
-    // Validate amount precision against token decimals
     const amountString = amount.toString();
     const decimalPart = amountString.includes('.') ? amountString.split('.')[1].length : 0;
     if (decimalPart > decimals) {
@@ -172,14 +117,8 @@ async function transferTokens() {
     
     const adjustedAmount = amount * Math.pow(10, decimals);
     
-    // Check sender's token balance
-    const senderTokenAccount = await getOrCreateAssociatedTokenAccount(
-      connection,
-      keypair,
-      tokenPubkey,
-      keypair.publicKey
-    );
-    
+    // 보낸 사람의 토큰 계정 확인
+    const senderTokenAccount = await getOrCreateAssociatedTokenAccount(connection, keypair, tokenPubkey, keypair.publicKey);
     const tokenBalance = Number(senderTokenAccount.amount) / Math.pow(10, decimals);
     console.log(`Your balance: ${chalk.green(tokenBalance.toString())} tokens`);
     console.log(`Amount to send: ${chalk.green(amount.toString())} tokens`);
@@ -189,16 +128,9 @@ async function transferTokens() {
       process.exit(1);
     }
     
-    // Get or create the recipient's token account
     console.log(chalk.cyan('Setting up recipient token account...'));
-    const recipientTokenAccount = await getOrCreateAssociatedTokenAccount(
-      connection,
-      keypair,
-      tokenPubkey,
-      new PublicKey(recipientAddress)
-    );
+    const recipientTokenAccount = await getOrCreateAssociatedTokenAccount(connection, keypair, tokenPubkey, new PublicKey(recipientAddress));
     
-    // Ask for confirmation
     const confirmation = prompt(chalk.yellow('Confirm transfer? (y/n): '));
     if (confirmation.toLowerCase() !== 'y') {
       console.log(chalk.yellow('Transfer cancelled.'));
@@ -207,7 +139,6 @@ async function transferTokens() {
     
     console.log(chalk.cyan('Creating transfer transaction...'));
     
-    // Create transfer instruction
     const transferInstruction = createTransferInstruction(
       senderTokenAccount.address,
       recipientTokenAccount.address,
@@ -215,7 +146,6 @@ async function transferTokens() {
       BigInt(Math.round(adjustedAmount))
     );
     
-    // Create and send transaction
     const transaction = new Transaction().add(transferInstruction);
     const signature = await sendAndConfirmTransaction(connection, transaction, [keypair]);
     
@@ -225,16 +155,12 @@ async function transferTokens() {
     console.log(`Transaction signature: ${chalk.blue(signature)}`);
     console.log(chalk.gray(`View on Solana Explorer: https://explorer.solana.com/tx/${signature}?cluster=devnet`));
     
-    // Get updated balance
     const updatedAccount = await getAccount(connection, senderTokenAccount.address);
     const newBalance = Number(updatedAccount.amount) / Math.pow(10, decimals);
     console.log(`\nYour new balance: ${chalk.green(newBalance.toString())} tokens`);
     
   } catch (error) {
-    console.error(
-      chalk.red('\n❌ Transfer failed:'),
-      error instanceof Error ? error.message : error
-    );
+    console.error(chalk.red('\n❌ Transfer failed:'), error instanceof Error ? error.message : error);
     console.log(chalk.yellow('\nTroubleshooting tips:'));
     console.log('- Check that you have enough SOL to pay for transaction fees');
     console.log('- Verify the recipient address is correct');
@@ -243,5 +169,4 @@ async function transferTokens() {
   }
 }
 
-// Run the transfer
 transferTokens();
