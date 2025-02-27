@@ -30,7 +30,7 @@ Get up and running in minutes:
 - **SPL Token Creation**: Generate fungible tokens on Solana Devnet.
 - **Metadata Management**: Attach names, symbols, and URIs to your tokens.
 - **Token Operations**: Check balances, transfer tokens, and batch process tasks.
-- **Future Plans**: DEX listing, marketing automation (see [Roadmap](./docs/journey/lessons-learned.md)).
+- **Future Plans**: DEX integration and marketing automation tools.
 
 ## Installation
 
@@ -138,36 +138,21 @@ Get up and running in minutes:
 - Test with small amounts before scaling.
 - Enable logging for debugging (disable with --no-log).
 
-More details in [Troubleshooting Guide](./docs/guides/troubleshooting.md).
-
 ## Documentation
 
 ### Guides:  
 - [Token Creation](./docs/guides/token-creation.md)  
 - [Metadata Setup](./docs/guides/metadata-setup.md)  
-- [DEX Listing](./docs/journey/environment-setup.md)
 
 ### Technical:  
 - [Architecture](./docs/technical/architecture.md)  
 - [API Reference](./docs/technical/api-reference.md)
-
-### Support: 
-[FAQ](./docs/resources/useful-links.md) | [Troubleshooting](./docs/guides/troubleshooting.md)
 
 ## Testing
 Run tests with Jest:
 ```bash
 npm test
 ```
-
-See [Testing Guidelines](./docs/journey/debugging-notes.md).
-
-## Roadmap
-Upcoming features:
-- DEX integration
-- Marketing automation tools
-
-Details in [Development Journey](./docs/journey/lessons-learned.md).
 
 ## Contributing
 Contributions are not currently accepted. For inquiries, contact the MOTO PROTOCOL team.
@@ -176,7 +161,7 @@ Contributions are not currently accepted. For inquiries, contact the MOTO PROTOC
 MIT License
 Copyright (c) 2024 MOTO PROTOCOL
 
-See full MIT License (#mit-license) below.
+See full MIT License below.
 
 ### Third-Party Licenses
 - @solana/web3.js: Apache-2.0
