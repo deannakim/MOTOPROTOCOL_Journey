@@ -171,3 +171,90 @@ For detailed license information of dependencies, please see the respective proj
 - For commercial use, please contact the MOTO PROTOCOL team
 - Test tokens created using this software have no real value
 - Use at your own risk on Devnet only
+
+추가 내용
+
+## 📌 Quick Start
+- **Installation requirements:** Node.js, npm, Solana CLI
+- **Basic setup commands:** Environment configuration, token creation, and metadata setup
+- **Quick usage example:** Running basic commands to create and list your SPL token
+
+## 🧪 Test Environment Setup
+1. **Create Test Wallet**
+   ```bash
+   # Create a new test wallet
+   solana-keygen new --outfile test-wallet.json
+
+   # Get SOL from Devnet faucet
+   solana airdrop 1 $(solana-keygen pubkey test-wallet.json) --url devnet
+   ```
+
+2. **Configure Test Environment**
+   - Default configuration is in `config/config.ts`:
+     ```typescript
+     export const CONFIG = {
+       TOKEN_ADDRESS: "YLf4BdNj1iiKiroGLGELNZrZQP9JtGGDkDfDcYLNiR1",
+       WALLET_FILE: "./test-wallet.json",
+       // ... other settings
+     };
+     ```
+   - You can override settings using environment variables
+
+3. **Create & Setup Test Tokens**
+   ```bash
+   # Create and mint test tokens
+   npm run mint:test-tokens
+   
+   # Verify token creation
+   npm run example:balance
+   # Should show: Wallet balance: <SOL amount>, MTP: 1000000
+   ```
+
+4. **Run Examples**
+   ```bash
+   # Check token info
+   npm run example:info
+   
+   # Transfer tokens
+   npm run example:transfer
+   
+   # Run batch process
+   npm run batch
+   ```
+
+## 🔧 Troubleshooting
+
+### Common Issues
+
+1. **Token Transfer Issues**
+   ```bash
+   Error: Insufficient balance. You have 0 tokens but tried to send 1.
+   ```
+   **Solution:**
+   - Check if your wallet has enough tokens
+   - Verify the token address in config.ts is correct
+   - Make sure you're using the right wallet file
+   ```bash
+   # Verify token balance first
+   npm run example:balance
+   ```
+
+2. **Script Path Errors**
+   ```bash
+   Script file not found: <filepath>
+   ```
+   **Solution:**
+   - Verify all example scripts are in the correct directory
+   - Check file permissions
+   - Make sure you're running from project root
+
+3. **Environment Setup**
+   - Always use test wallet for development
+   - Keep test tokens separate from production
+   - Use Devnet for testing
+
+### Best Practices
+1. Always check balances before transfers
+2. Use `--continue-on-error` flag for batch operations
+3. Test with small amounts first
+4. Keep logs for debugging (`--no-log` disables logging)
