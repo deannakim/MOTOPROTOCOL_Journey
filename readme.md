@@ -15,7 +15,6 @@
 ## 🛠 Installation
 - **Prerequisites:** Node.js (latest LTS), npm, and Solana CLI.
 - **Step-by-step installation:** See [Setup Guide](./docs/setup-guide.md).
-
 ## 🧪 Test Environment Setup
 1. **Create Test Wallet**
    ```bash
@@ -28,49 +27,47 @@
 
 2. **Create & Setup Test Tokens**
    ```bash
-   # Create and mint test tokens
+   # Create and mint new test tokens
    npm run mint:test-tokens
+   
+   # Save the output addresses:
+   # MINT_ADDRESS=<your-token-address>
+   # TOKEN_ACCOUNT=<your-token-account>
+   ```
 
-   # Verify token creation and balance
+3. **Update Token Address**
+   - Open these files and update the token address with your MINT_ADDRESS:
+     - docs/examples/basic/check-balance.ts
+     - docs/examples/basic/token-info.ts
+     - docs/examples/basic/transfer-tokens.ts
+     - docs/examples/advanced/batch-process.ts
+
+4. **Verify Setup**
+   ```bash
+   # Check your token balance
    npm run example:balance
-
-   # Check token information
+   
+   # Should show: Wallet balance: <SOL amount>, MTP: 1000000
+   
+   # View token information
    npm run example:info
    ```
 
-3. **Run Batch Process**
+5. **Run Batch Process**
    ```bash
    # Basic sequential execution
    npm run batch
-
-   # With options
-   npm run batch -- --parallel         # Run in parallel
-   npm run batch -- --task=transfer    # Run specific task
-   npm run batch -- --continue-on-error # Continue on errors
    ```
 
-4. **Troubleshooting**
-   - If token balance is 0:
-     ```bash
-     # Mint new test tokens first
-     npm run mint:test-tokens
-     
-     # Verify the balance
-     npm run example:balance
-     ```
-   - If transfer fails:
-     - Check SOL balance for fees
-     - Verify token balance is sufficient
-     - Ensure correct token address is used
-
-5. **Security Notes**
-   - Add `test-wallet.json` and `.env` to `.gitignore`
-   - Never use production wallets for testing
-   - Keep your test wallet's private key secure
-   - Test tokens have no real value and are for testing only
-// ... existing code ...
 
 ## 🔧 Troubleshooting
+
+- If token balance is 0:
+  - Make sure you've updated all files with your MINT_ADDRESS
+  - Try minting tokens again: `npm run mint:test-tokens`
+- If transfer fails:
+  - Check SOL balance for fees
+  - Verify token balance is sufficient
 
 ### Common Issues
 
