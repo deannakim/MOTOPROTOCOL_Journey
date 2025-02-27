@@ -37,7 +37,7 @@ import * as fs from 'fs';
 
 // Configuration
 const WALLET_FILE = './test-wallet.json'; // 새로 생성한 지갑 파일 사용
-const TOKEN_ADDRESS = 'GccSrdDCs28Up6W8BdqDUwpSbJUAg2LXPRKPeQsNx6h'; // MOTO PROTOCOL (MTP)
+const TOKEN_ADDRESS = 'YLf4BdNj1iiKiroGLGELNZrZQP9JtGGDkDfDcYLNiR1'; // MOTO PROTOCOL (MTP)
 const RPC_ENDPOINT = 'https://api.devnet.solana.com'; // Solana Devnet
 
 // Initialize Umi and load wallet
