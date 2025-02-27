@@ -17,7 +17,7 @@
 - **Step-by-step installation:** See [Setup Guide](./docs/setup-guide.md).
 
 ## 🧪 Test Environment Setup
-1. **Create Test Wallets**
+1. **Create Test Wallet**
    ```bash
    # Create a new test wallet
    solana-keygen new --outfile test-wallet.json
@@ -26,33 +26,42 @@
    solana airdrop 1 $(solana-keygen pubkey test-wallet.json) --url devnet
    ```
 
-2. **Create Test Tokens**
+2. **Create & Setup Test Tokens**
    ```bash
    # Create and mint test tokens
    npm run mint:test-tokens
 
-   # Save the output addresses:
-   # MINT_ADDRESS=<your-token-mint-address>
-   # TOKEN_ACCOUNT=<your-token-account-address>
+   # Verify token creation and balance
+   npm run example:balance
+
+   # Check token information
+   npm run example:info
    ```
 
-3. **Environment Configuration**
+3. **Run Batch Process**
    ```bash
-   # Create .env file in project root
-   RPC_URL=https://api.devnet.solana.com
-   WALLET_FILE=./test-wallet.json
+   # Basic sequential execution
+   npm run batch
+
+   # With options
+   npm run batch -- --parallel         # Run in parallel
+   npm run batch -- --task=transfer    # Run specific task
+   npm run batch -- --continue-on-error # Continue on errors
    ```
 
-4. **Run Examples**
-   ```bash
-   # Basic examples
-   npm run example:balance    # Check wallet balance
-   npm run example:info      # Get token info
-   npm run example:transfer  # Transfer tokens
-
-   # Advanced examples
-   npm run batch            # Run batch processing
-   ```
+4. **Troubleshooting**
+   - If token balance is 0:
+     ```bash
+     # Mint new test tokens first
+     npm run mint:test-tokens
+     
+     # Verify the balance
+     npm run example:balance
+     ```
+   - If transfer fails:
+     - Check SOL balance for fees
+     - Verify token balance is sufficient
+     - Ensure correct token address is used
 
 5. **Security Notes**
    - Add `test-wallet.json` and `.env` to `.gitignore`
