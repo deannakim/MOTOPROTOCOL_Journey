@@ -30,7 +30,7 @@ Get up and running in minutes:
 - **SPL Token Creation**: Generate fungible tokens on Solana Devnet.
 - **Metadata Management**: Attach names, symbols, and URIs to your tokens.
 - **Token Operations**: Check balances, transfer tokens, and batch process tasks.
-- **Future Plans**: DEX listing, marketing automation (see [Roadmap](./docs/roadmap.md)).
+- **Future Plans**: DEX listing, marketing automation (see [Roadmap](./docs/journey/lessons-learned.md)).
 
 ## Installation
 
@@ -138,21 +138,21 @@ Get up and running in minutes:
 - Test with small amounts before scaling.
 - Enable logging for debugging (disable with --no-log).
 
-More details in [Troubleshooting Guide](./docs/troubleshooting.md).
+More details in [Troubleshooting Guide](./docs/guides/troubleshooting.md).
 
 ## Documentation
 
 ### Guides:  
 - [Token Creation](./docs/guides/token-creation.md)  
 - [Metadata Setup](./docs/guides/metadata-setup.md)  
-- [DEX Listing](./docs/guides/dex-listing.md)
+- [DEX Listing](./docs/journey/environment-setup.md)
 
 ### Technical:  
 - [Architecture](./docs/technical/architecture.md)  
 - [API Reference](./docs/technical/api-reference.md)
 
 ### Support: 
-[FAQ](./docs/faq.md) | [Troubleshooting](./docs/troubleshooting.md)
+[FAQ](./docs/resources/useful-links.md) | [Troubleshooting](./docs/guides/troubleshooting.md)
 
 ## Testing
 Run tests with Jest:
@@ -160,14 +160,14 @@ Run tests with Jest:
 npm test
 ```
 
-See [Testing Guidelines](./docs/guides/testing-guidelines.md).
+See [Testing Guidelines](./docs/journey/debugging-notes.md).
 
 ## Roadmap
 Upcoming features:
 - DEX integration
 - Marketing automation tools
 
-Details in [Roadmap](./docs/roadmap.md).
+Details in [Development Journey](./docs/journey/lessons-learned.md).
 
 ## Contributing
 Contributions are not currently accepted. For inquiries, contact the MOTO PROTOCOL team.
