@@ -1,4 +1,3 @@
-
 ---
 name: Feature Request
 about: Propose enhancements to improve the MOTO PROTOCOL SPL Token Project
