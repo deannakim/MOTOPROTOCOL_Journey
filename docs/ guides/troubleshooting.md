@@ -3,15 +3,13 @@
 
 This guide addresses common issues during the MOTO PROTOCOL SPL Token Project setup and development, with solutions drawn from my debugging journey (see `../journey/debugging-notes.md`). It's here to save you time and frustration.
 
----
-
 ## Environment Setup Issues
 
 ### Node.js Version Conflicts
 **Problem**:
-- Incompatible Node.js version (e.g., v22.x breaks Metaplex).
-- PNPM version mismatches.
-- Build failures due to version issues.
+- Incompatible Node.js version (e.g., v22.x breaks Metaplex)
+- PNPM version mismatches
+- Build failures due to version issues
 
 **Solution**:
 ```bash
@@ -26,14 +24,13 @@ nvm use 16.20.0
 npm install -g ts-node
 ```
 
-## Project Structure Issues
+### Project Structure Issues
+**Problem**:
+- Incorrect file organization (e.g., .ts files in root)
+- Missing directories (src/, dist/)
+- TypeScript compilation errors
 
-### Problem:
-- Incorrect file organization (e.g., .ts files in root).
-- Missing directories (src/, dist/).
-- TypeScript compilation errors.
-
-### Solution:
+**Solution**:
 ```bash
 # Set up proper structure
 mkdir -p src dist docs/examples/basic
@@ -45,9 +42,9 @@ touch docs/examples/basic/my_wallet.json
 
 ### Build Errors
 **Problem**:
-- Incomplete tsconfig.json.
-- Dependency conflicts.
-- Compilation failures.
+- Incomplete tsconfig.json
+- Dependency conflicts
+- Compilation failures
 
 **Solution**:
 Verify tsconfig.json:
@@ -73,14 +70,11 @@ pnpm install @solana/web3.js @solana/spl-token @metaplex-foundation/js dotenv ch
 pnpm run build
 ```
 
-### Successful Build
-Confirm with: `ls dist/` (Unix) or `dir dist\` (Windows).
-
 ## Common Issues & Solutions
 
 ### 1. PNPM Installation Issues
 **Problem**:
-"Error: This version of pnpm requires at least Node.js v18.12".
+"Error: This version of pnpm requires at least Node.js v18.12"
 
 **Solution**:
 ```bash
@@ -92,11 +86,11 @@ pnpm -v  # Should show 7.x
 
 ### 2. TypeScript Compilation Errors
 **Problem**:
-- "Cannot find module" or "No inputs were found".
-- TS2345: Keypair/Metaplex type mismatches.
+- "Cannot find module" or "No inputs were found"
+- TS2345: Keypair/Metaplex type mismatches
 
 **Solution**:
-- Check tsconfig.json includes "src/**/*".
+- Check tsconfig.json includes "src/**/*"
 - Update Metaplex calls:
 ```typescript
 const metaplex = Metaplex.make(connection).use(keypairIdentity(wallet));
@@ -104,9 +98,9 @@ const metaplex = Metaplex.make(connection).use(keypairIdentity(wallet));
 
 ### 3. Solana CLI & Runtime Issues
 **Problem**:
-- fetch failed network errors.
-- Insufficient balance for transactions.
-- NotEnoughBytesError in token info.
+- fetch failed network errors
+- Insufficient balance for transactions
+- NotEnoughBytesError in token info
 
 **Solution**:
 ```bash
@@ -117,22 +111,23 @@ solana balance --url https://rpc.ankr.com/solana_devnet
 # Airdrop SOL
 solana airdrop 2 --url https://rpc.ankr.com/solana_devnet
 
-# Mint with metadata to avoid metadata errors
-npm run mint:test-tokens
+# Handle metadata errors
+# Check if token includes metadata, or rely on fallback values in token-info.ts
+npm run mint:test-tokens  # Optional: Mint with metadata if needed
 ```
 
 ## Best Practices
 
 ### Environment Verification:
-- Always use Node 16.20.0, PNPM 7.x.
-- Test on Devnet before Mainnet.
+- Always use Node 16.20.0, PNPM 7.x
+- Test on Devnet before Mainnet
 
 ### Project Setup:
-- Centralize configs in config.ts or .env.
-- Use Git for version control.
+- Centralize configs in config.ts or .env
+- Use Git for version control
 
 ### Error Handling:
-- Log errors with chalk for clarity.
+- Log errors with chalk for clarity
 - Automate retries for network issues:
 ```typescript
 async function withRetry(fn, maxRetries = 3) {
@@ -160,7 +155,7 @@ pnpm run build
 
 ### Common Commands
 ```bash
-# Mint token with metadata
+# Mint token (metadata optional)
 npm run mint:test-tokens
 
 # Check balance
@@ -177,8 +172,8 @@ npm run example:info
 
 ## Getting Help
 If issues persist:
-- Check GitHub Issues.
-- Review debugging-notes.md.
-- Submit a bug report with logs and steps.
+- Check GitHub Issues
+- Review debugging-notes.md
+- Submit a bug report with logs and steps
 
 *Note: This guide evolves with user feedback and new findings—share your challenges to improve it!*
