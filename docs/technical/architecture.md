@@ -4,42 +4,32 @@
 ## Core Components
 
 ### 1. Token Layer
-Manages fundamental token operations.
-
-**Key Components**:
-- Token creation (`mint-test-tokens.ts`)
-- Supply management
-- Transfer operations
-- Stores name, symbol, URI on-chain
+- Manages token creation, supply, and transfers
+- Tokens store basic metadata (name, symbol, URI) on-chain
 
 ### 2. Metadata Layer
-Handles token metadata management.
-
-**Key Components**:
-- Metadata creation and updates
-- URI management
-- Metaplex integration
+- Handles metadata creation, updates, and URI management via Metaplex
+- Current metadata handling is documented in debugging notes and implemented in `mint-test-tokens.ts`
 
 ### 3. Interaction Layer
-Provides user interfaces for token operations.
+- Provides user interfaces for:
+  - Checking balances (`check-balance.ts`)
+  - Viewing token information (`token-info.ts`)
+  - Batch processing transfers (`transfer-tokens.ts`)
 
-**Key Components**:
-- Balance checking (`check-balance.ts`, 2.2)
-- Token info (`token-info.ts`, 2.3)
-- Batch processing (`transfer-tokens.ts`, 2.7)
+## Implementation
+- Built using TypeScript scripts executed via npm commands
+- Utilizes error handling with Chalk
+- Integrates environment configurations via dotenv
 
-**Implementation**:
-- TypeScript scripts executed via `npm run`
-- Includes error handling with `chalk` (2.4)
-
-## Technical Stack
+## Tech Stack
 
 ### Core Technologies
-- **Blockchain**: Solana
-- **Token Standard**: SPL Token
-- **Metadata Standard**: Metaplex Token Metadata
-- **Language**: TypeScript
-- **Runtime**: Node.js 16.20.0 (1.1)
+- **Blockchain:** Solana
+- **Token Standard:** SPL Token
+- **Metadata Standard:** Metaplex Token Metadata
+- **Language:** TypeScript
+- **Runtime:** Node.js 16.20.0
 
 ### Dependencies
 ```json
@@ -54,13 +44,7 @@ Provides user interfaces for token operations.
 }
 ```
 
-- `@metaplex-foundation/js`: Metadata and token operations (2.10)
-- `@solana/spl-token`: SPL token management
-- `@solana/web3.js`: Solana blockchain interaction
-- `chalk`: CLI output styling (2.4)
-- `dotenv`: Environment config (3.3)
-
-### Development Environment
+## Development Environment
 ```json
 {
   "compilerOptions": {
@@ -78,7 +62,6 @@ Provides user interfaces for token operations.
 ```
 
 ## Token Metadata Structure
-Minimal structure from `mint-test-tokens.ts` (3.1):
 ```json
 {
   "name": "MOTO Journey Test Token",
@@ -96,45 +79,19 @@ Minimal structure from `mint-test-tokens.ts` (3.1):
     │  Token   ├───►│     ATA      ├───►│  with Metaplex  │
     └──────────┘    └──────────────┘    └─────────────────┘
 
-1. Create SPL token (createMint, 3.1)
-2. Implicitly handle ATAs (mint, 3.1)
-3. Add metadata (nfts().create, 3.1)
-
 ### Token Transfer Process
-
     ┌──────────┐    ┌──────────────┐    ┌──────────────┐    ┌──────────┐
     │  Check   │    │   Validate   │    │   Execute    │    │  Confirm │
     │ Balance  ├───►│  Parameters  ├───►│  Transfer    ├───►│  Result  │
     └──────────┘    └──────────────┘    └──────────────┘    └──────────┘
 
-1. Verify balance (check-balance.ts, 2.2)
-2. Use command-line args (transfer-tokens.ts, 2.7)
-3. Execute and log transfer (2.4)
 
 ## Security Considerations
-- **Error Handling**: Detailed logs with chalk (2.4), retries for network issues (3.2)
-- **Key Management**: Wallet at docs/examples/basic/my_wallet.json (2.5), .env usage (3.3)
-- **Validation**: Pre-transfer checks (2.6)
+- **Error Handling:** Detailed logs with chalk, retries for network issues
+- **Key Management:** Wallet at docs/examples/basic/my_wallet.json, .env usage
+- **Validation:** Pre-transfer checks
 
-## Scalability and Future Enhancements
-- **Automation**: config.ts updates (2.8, 3.3)
-- **Batch Efficiency**: 644s to 25s (2.7)
-- **Extendable** for future features per Next Steps
-
-## Implementation Examples
-
-### Token Creation
-```bash
-npm run mint:test-tokens
-```
-See `src/mint-test-tokens.ts` (3.1)
-
-### Token Transfer
-```bash
-npm run example:transfer -- <TOKEN_ADDRESS> <AMOUNT> <RECIPIENT>
-```
-See `src/transfer-tokens.ts` (2.7)
-
-## Conclusion
-MOTO PROTOCOL leverages Solana's SPL and Metaplex standards for an efficient token system, optimized through debugging (e.g., 96% faster batch processing, 2.7). Its modular design supports future growth, ensuring compatibility with Solana's ecosystem.
-
+## Future Enhancements
+- **Automation:** config.ts updates
+- **Batch Efficiency:** Optimized from 644s to 25s
+- **Extendable** for future features
