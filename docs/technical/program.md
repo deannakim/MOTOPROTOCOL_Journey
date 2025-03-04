@@ -3,103 +3,91 @@
 This document outlines the Solana programs used by MOTO PROTOCOL and how they interact with the token ecosystem.
 
 ## Overview
+MOTO PROTOCOL leverages standard Solana programs rather than deploying custom on-chain code. This approach offers:
 
-MOTO PROTOCOL leverages standard Solana programs rather than deploying custom on-chain code. This approach provides several advantages:
-
-- **Security**: Using audited, battle-tested programs reduces security risks
-- **Compatibility**: Ensures compatibility with the broader Solana ecosystem
-- **Efficiency**: Avoids redundancy by utilizing existing on-chain infrastructure
+- **Security:** Uses audited, widely-tested programs to minimize risks
+- **Compatibility:** Ensures integration with the Solana ecosystem
+- **Efficiency:** Builds on existing infrastructure to avoid redundancy
 
 ## Core Programs
 
 ### SPL Token Program
+The SPL Token Program underpins MOTO PROTOCOL's token functionality.
 
-The SPL Token Program is the foundation of MOTO PROTOCOL's token functionality.
+- **Program ID:** `TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA`
+- **Key Functions:**
+  - Token creation and minting
+  - Token transfers between accounts
+  - Account creation and management
+  - Authority management (mint and freeze)
 
-**Program ID**: `TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA`
-
-**Key Functions**:
-- Token creation and minting
-- Token transfers between accounts
-- Account creation and management
-- Authority management (mint and freeze authorities)
-
-**MOTO Token Details**:
+#### MOTO Token Details (Dynamic Example):
 ```json
 {
-  "tokenMint": "6DytphLb57wEgYyrAUnYFCraYEz3Ljfhi3NGcSpBcTaE",
-  "tokenAccount": "HunkbMppfzjSMFanXFzm1piNpiu926ciJNYxbDgg3dog",
-  "owner": "6P247mnw8bxXHRExiG3zSW6THgUj1KAude9hKRZmHjiD",
+  "tokenMint": "<Dynamically generated>",
+  "tokenAccount": "<Generated per wallet>",
+  "owner": "<Wallet public key>",
   "decimals": 9,
-  "totalSupply": "15,000,000,000"
+  "totalSupply": "<Configurable, e.g., 1,000,000 for testing>"
 }
 ```
 
-**Example Interaction**:
+#### Example Interaction:
 ```typescript
 import { Connection, PublicKey } from "@solana/web3.js";
 import { getAccount, getMint } from "@solana/spl-token";
+import { CONFIG } from "../config/config";
 
 async function checkTokenInfo() {
-  const connection = new Connection("https://api.devnet.solana.com", "confirmed");
-  const mintAddress = new PublicKey("6DytphLb57wEgYyrAUnYFCraYEz3Ljfhi3NGcSpBcTaE");
-  
-  // Fetch token mint information
+  const connection = new Connection(CONFIG.RPC_URL, "confirmed");
+  const mintAddress = new PublicKey(CONFIG.TOKEN_ADDRESS);
+
   const mintInfo = await getMint(connection, mintAddress);
   console.log("Total Supply:", Number(mintInfo.supply) / 1e9);
   console.log("Decimals:", mintInfo.decimals);
-  
-  // Fetch token account information
-  const account = new PublicKey("HunkbMppfzjSMFanXFzm1piNpiu926ciJNYxbDgg3dog");
+
+  const account = new PublicKey("<Token Account Address>");
   const accountInfo = await getAccount(connection, account);
   console.log("Account Balance:", Number(accountInfo.amount) / 1e9);
 }
 ```
 
 ### Metaplex Token Metadata Program
+Manages metadata for MOTO tokens, still under active development as of March 4, 2025.
 
-The Metaplex Token Metadata Program manages metadata for the MOTO token.
+- **Program ID:** `metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s`
+- **Key Functions:**
+  - Creating and storing token metadata
+  - Managing metadata (name, symbol, URI)
+  - Updating metadata
 
-**Program ID**: `metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s`
-
-**Key Functions**:
-- Creating and storing token metadata
-- Managing metadata such as name, symbol, and image URI
-- Updating token metadata
-
-**Metadata Structure**:
-```typescript
+#### Metadata Structure (Test Example):
+```json
 {
-  name: "MOTO PROTOCOL",
-  symbol: "MTP",
-  uri: "https://arweave.net/..."  // URI to metadata JSON file
+  "name": "MOTO Journey Test Token",
+  "symbol": "MJTEST",
+  "uri": "https://raw.githubusercontent.com/yourusername/MOTOPROTOCOL_Journey/main/assets/token-metadata.json"
 }
 ```
 
-**Example Interaction**:
+#### Example Interaction:
 ```typescript
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
-import { 
-  findMetadataPda,
-  mplTokenMetadata,
-  fetchMetadata
-} from "@metaplex-foundation/mpl-token-metadata";
+import { findMetadataPda, mplTokenMetadata, fetchMetadata } from "@metaplex-foundation/mpl-token-metadata";
 import { publicKey } from "@metaplex-foundation/umi";
+import { CONFIG } from "../config/config";
 
 async function checkMetadata() {
-  const umi = createUmi("https://api.devnet.solana.com");
-  umi.use(mplTokenMetadata());
-  
-  const mintAddress = "GccSrdDCs28Up6W8BdqDUwpSbJUAg2LXPRKPeQsNx6h";
-  
-  // Find metadata PDA
-  const [metadataAddress] = findMetadataPda(umi, {
-    mint: publicKey(mintAddress)
-  });
-  
-  // Fetch metadata
-  const metadata = await fetchMetadata(umi, metadataAddress);
-  
+  const umi = createUmi(CONFIG.RPC_URL).use(mplTokenMetadata());
+  const mintAddress = publicKey(CONFIG.TOKEN_ADDRESS);
+
+  const [metadataAddress] = findMetadataPda(umi, { mint: mintAddress });
+  const metadata = await fetchMetadata(umi, metadataAddress).catch(() => ({
+    name: "Unknown",
+    symbol: "N/A",
+    uri: ""
+  }));
+
   console.log("Name:", metadata.name);
   console.log("Symbol:", metadata.symbol);
   console.log("URI:", metadata.uri);
@@ -109,84 +97,79 @@ async function checkMetadata() {
 ## Token Operations
 
 ### Token Creation
-
-MOTO PROTOCOL tokens are created using the SPL Token Program's mint functionality:
-
 ```typescript
 import { createMint, getOrCreateAssociatedTokenAccount, mintTo } from "@solana/spl-token";
 import { Connection, Keypair } from "@solana/web3.js";
+import { Metaplex, keypairIdentity } from "@metaplex-foundation/js";
+import { CONFIG } from "../config/config";
 
 async function createToken() {
-  const connection = new Connection("https://api.devnet.solana.com", "confirmed");
+  const connection = new Connection(CONFIG.RPC_URL, "confirmed");
   const payer = Keypair.fromSecretKey(/* wallet secret key */);
-  
-  // Create token mint
-  const mint = await createMint(
-    connection,
-    payer,
-    payer.publicKey,  // mint authority
-    payer.publicKey,  // freeze authority (optional)
-    9                 // decimals
-  );
-  
-  // Create token account
+
+  const mint = await createMint(connection, payer, payer.publicKey, null, 9);
   const tokenAccount = await getOrCreateAssociatedTokenAccount(
-    connection,
-    payer,
-    mint,
+    connection, 
+    payer, 
+    mint, 
     payer.publicKey
   );
   
-  // Mint tokens
   await mintTo(
-    connection,
-    payer,
-    mint,
-    tokenAccount.address,
-    payer,
-    15_000_000_000_000_000_000 // 15 billion tokens with 9 decimals
+    connection, 
+    payer, 
+    mint, 
+    tokenAccount.address, 
+    payer, 
+    BigInt(CONFIG.MINT_AMOUNT * 1e9)
   );
+
+  const metaplex = Metaplex.make(connection).use(keypairIdentity(payer));
+  await metaplex.nfts().create({
+    uri: "https://raw.githubusercontent.com/yourusername/MOTOPROTOCOL_Journey/main/assets/token-metadata.json",
+    name: "MOTO Journey Test Token",
+    symbol: "MJTEST",
+    sellerFeeBasisPoints: 0,
+    mint: mint,
+    tokenOwner: payer.publicKey,
+    updateAuthority: payer.publicKey
+  });
 }
 ```
 
 ### Token Transfers
-
-MOTO PROTOCOL implements various token transfer mechanisms:
-
 ```typescript
 import { Connection, PublicKey, Keypair } from "@solana/web3.js";
 import { getOrCreateAssociatedTokenAccount, transfer } from "@solana/spl-token";
+import { CONFIG } from "../config/config";
 
 async function transferTokens() {
-  const connection = new Connection("https://api.devnet.solana.com", "confirmed");
+  const connection = new Connection(CONFIG.RPC_URL, "confirmed");
   const payer = Keypair.fromSecretKey(/* wallet secret key */);
-  const mintAddress = new PublicKey("6DytphLb57wEgYyrAUnYFCraYEz3Ljfhi3NGcSpBcTaE");
-  
-  // Source account
+  const mintAddress = new PublicKey(CONFIG.TOKEN_ADDRESS);
+
   const sourceAccount = await getOrCreateAssociatedTokenAccount(
-    connection,
-    payer,
-    mintAddress,
+    connection, 
+    payer, 
+    mintAddress, 
     payer.publicKey
   );
   
-  // Destination account (create if it doesn't exist)
-  const destinationWallet = new PublicKey("CLskX6hMUxbAgRXXQ5XojqciN6eSvNjbFJ1Xx5iZbGCX");
+  const destinationWallet = new PublicKey("<Recipient Address>");
   const destinationAccount = await getOrCreateAssociatedTokenAccount(
-    connection,
-    payer,
-    mintAddress,
+    connection, 
+    payer, 
+    mintAddress, 
     destinationWallet
   );
-  
-  // Transfer tokens
-  const transferAmount = 1000 * 1e9; // 1000 tokens with 9 decimals
+
+  const transferAmount = 1000 * 1e9;
   const signature = await transfer(
-    connection,
-    payer,
-    sourceAccount.address,
-    destinationAccount.address,
-    payer,
+    connection, 
+    payer, 
+    sourceAccount.address, 
+    destinationAccount.address, 
+    payer, 
     transferAmount
   );
   
@@ -194,115 +177,24 @@ async function transferTokens() {
 }
 ```
 
-### Disabling Minting
-
-For token supply management, MOTO PROTOCOL can permanently disable minting:
-
-```typescript
-import { Connection, PublicKey, Keypair } from "@solana/web3.js";
-import { setAuthority, AuthorityType } from "@solana/spl-token";
-
-async function disableMinting() {
-  const connection = new Connection("https://api.devnet.solana.com", "confirmed");
-  const payer = Keypair.fromSecretKey(/* wallet secret key */);
-  const mintAddress = new PublicKey("6DytphLb57wEgYyrAUnYFCraYEz3Ljfhi3NGcSpBcTaE");
-  
-  // Remove mint authority (set to null)
-  const result = await setAuthority(
-    connection,
-    payer,
-    mintAddress,
-    payer,
-    AuthorityType.MintTokens,
-    null  // null = permanently remove authority
-  );
-  
-  console.log("Minting disabled:", result);
-}
-```
-
-### Batch Processing
-
-MOTO PROTOCOL implements a batch processing system to automate various token management tasks. This system provides:
-
-- Sequential or parallel execution of multiple operations
-- Filtering operations by category
-- Error handling and logging
-- Managing dependencies between operations
-
-The batch processing system is implemented in [batch-process.ts](https://github.com/MOTOPROTOCOL/MOTOPROTOCOL_Journey/blob/main/docs/examples/advanced/batch-process.ts).
-
 ## Authority Management
-
-MOTO PROTOCOL carefully manages token authorities:
-
-- **Mint Authority**: Controls the ability to mint new tokens
-  - Current holder: `6P247mnw8bxXHRExiG3zSW6THgUj1KAude9hKRZmHjiD`
-  
-- **Freeze Authority**: Controls the ability to freeze token accounts
-  - Current holder: `6P247mnw8bxXHRExiG3zSW6THgUj1KAude9hKRZmHjiD`
-
-For production deployments, these authorities may be disabled or transferred to governance mechanisms.
-
-### Changing Account Authority
-
-Example of changing token account ownership:
-
-```typescript
-import { Connection, Keypair, PublicKey } from '@solana/web3.js';
-import { setAuthority, AuthorityType } from '@solana/spl-token';
-
-async function changeTokenAuthority(
-  connection: Connection,
-  payer: Keypair,
-  tokenAccount: PublicKey,
-  currentAuthority: Keypair,
-  newAuthority: PublicKey
-) {
-  const signature = await setAuthority(
-    connection,
-    payer,            // Transaction fee payer
-    tokenAccount,     // Token account to change authority for
-    currentAuthority, // Current authority holder
-    AuthorityType.AccountOwner, // Type of authority to change
-    newAuthority     // New authority holder
-  );
-  
-  return signature;
-}
-```
+- **Mint Authority:** Configurable, typically the wallet's public key
+- **Freeze Authority:** Optional, often null or same as mint authority
 
 ## Transaction Validation
-
-All token operations include multiple validation steps:
-
-1. Account existence verification
-2. Balance checks for transfers
-3. Authority validation
-4. Error handling with specific error messages
+Includes:
+- Account existence checks
+- Balance verification
+- Authority confirmation
+- Detailed error logging
 
 ## Testing and Validation
+Status: Ongoing as of March 4, 2025
 
-MOTO PROTOCOL has undergone extensive testing on Devnet:
-
-### Test Results Summary
-
-```
-- Account Validation Test: ✅ PASSED
-  - Valid accounts correctly identified
-  - Invalid accounts properly rejected with appropriate errors
-
-- Maximum Transfer Test: ✅ PASSED
-  - Transfers exceeding balance rejected with "insufficient funds" error
-
-- Invalid Address Test: ✅ PASSED
-  - Transfers to invalid accounts rejected with "InvalidAccountData" error
-```
-
-Full test documentation is available in the project repository.
+### Planned Tests:
+- Account validation
+- Transfer limits
+- Invalid address handling
 
 ## Conclusion
-
-MOTO PROTOCOL leverages Solana's existing program infrastructure rather than deploying custom on-chain code. This approach provides security, compatibility, and efficiency while still enabling all the functionality required for the token ecosystem.
-
-By building on top of the SPL Token Program and Metaplex Token Metadata Program, MOTO PROTOCOL ensures compatibility with wallets, exchanges, and other Solana ecosystem components while focusing development efforts on creating a robust and user-friendly experience.
+MOTO PROTOCOL builds on the SPL Token Program and Metaplex Token Metadata Program for a secure, compatible token ecosystem. While metadata integration remains in progress, the focus on off-chain automation and robust documentation ensures a user-friendly experience compatible with Solana's broader infrastructure.
