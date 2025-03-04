@@ -1,8 +1,8 @@
 # MOTO Protocol Token Creation Guide
 
 ## Token Metadata Configuration
-
-```typescript:src/token-metadata.ts
+```typescript
+// This is a test configuration; metadata is optional in the stable workflow
 export const TOKEN_METADATA = {
   name: "MOTO Journey Test Token",
   symbol: "MJTEST",
@@ -12,8 +12,8 @@ export const TOKEN_METADATA = {
 
 ## Token Creation Function
 
-```typescript:src/mint-test-tokens.ts
-async function createTokenWithMetadata() {
+```typescript
+async function createTestToken() {
   try {
     console.log(chalk.cyan("Creating SPL token..."));
     const connection = new Connection(CONFIG.RPC_URL, "confirmed");
@@ -42,7 +42,8 @@ async function createTokenWithMetadata() {
       toOwner: wallet.publicKey,
     });
 
-    // 3. Create Metadata
+    // 3. Create Metadata (Optional, under development)
+    // Note: Currently, stable token creation may skip this step
     await metaplex.nfts().create({
       uri: TOKEN_METADATA.uri,
       name: TOKEN_METADATA.name,
@@ -63,14 +64,14 @@ async function createTokenWithMetadata() {
 
 ## Execution Instructions
 
-1. Create Token:
+### Create Token:
 ```bash
 ts-node src/mint-test-tokens.ts
 ```
 
-2. Verify Token:
+### Verify Token:
 ```bash
-npm run example:info    # Check metadata
+npm run example:info    # Check metadata (if included)
 npm run example:balance # Verify balance
 ```
 
@@ -78,16 +79,16 @@ npm run example:balance # Verify balance
 
 ### Common Issues
 
-1. **Node Version Conflicts**:
+1. **Node Version Conflicts:**
    - Fix: `nvm use 16.20.0`
 
-2. **Build Errors**:
+2. **Build Errors:**
    - Fix: Check tsconfig.json paths, reinstall dependencies (pnpm install)
 
-3. **Solana Issues**:
-   - Network Errors: Switch to `https://rpc.ankr.com/solana_devnet`
+3. **Solana Issues:**
+   - Network Errors: Switch to https://rpc.ankr.com/solana_devnet
    - Insufficient Balance: Airdrop SOL
-   - Metadata Errors: Ensure token includes metadata
+   - Metadata Errors: Check if token was minted with metadata, or expect fallback values
 
 ## Best Practices
 
@@ -104,14 +105,12 @@ npm run example:balance # Verify balance
 - Document mint addresses in README
 
 ## Next Steps
-
-1. Add metadata (covered above)
+1. Stabilize metadata integration (in progress)
 2. Configure advanced properties (e.g., freeze authority)
 3. Deploy to Mainnet
 4. Integrate with liquidity pools
 
 ## Resources
-
 - [Solana CLI Tools](https://docs.solana.com/cli)
 - [SPL Token Program](https://spl.solana.com/token)
 - [Metaplex Documentation](https://docs.metaplex.com)
