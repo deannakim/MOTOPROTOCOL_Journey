@@ -91,6 +91,7 @@ Minimal structure from `mint-test-tokens.ts` (3.1):
 
 ### Token Creation and Metadata Update
 
+
 };
 
 async function mintWithMetadata() {
@@ -722,9 +723,10 @@ MOTO PROTOCOL leverages Solana’s SPL and Metaplex standards for an efficient t
 
 
 ┌──────────┐ ┌──────────────┐ ┌─────────────────┐
-│ Create │ │ Generate │ │ Update Metadata │
-│ Token ├──►│ ATA ├──►│ with Metaplex │
+│ Create   │ │ Generate     │ │ Update Metadata │
+│ Token   ├──►│ ATA         ├──►│ with Metaplex │
 └──────────┘ └──────────────┘ └─────────────────┘
+
 
 1. Create SPL token (createMint, 3.1)
 2. Implicitly handle ATAs (mint, 3.1)
@@ -732,9 +734,10 @@ MOTO PROTOCOL leverages Solana’s SPL and Metaplex standards for an efficient t
 
 ### Token Transfer Process
 ┌──────────┐ ┌──────────────┐ ┌──────────────┐ ┌──────────┐
-│ Check │ │ Validate │ │ Execute │ │ Confirm │
-│ Balance ├──►│ Parameters ├──►│ Transfer ├──►│ Result │
+│ Check    │ │ Validate     │ │ Execute      │ │ Confirm  │
+│ Balance  ├─►│ Parameters  ├─►│ Transfer    ├─►│Result   │
 └──────────┘ └──────────────┘ └──────────────┘ └──────────┘
+
 
 1. Verify balance (check-balance.ts, 2.2)
 2. Use command-line args (transfer-tokens.ts, 2.7)
@@ -766,3 +769,4 @@ See `src/transfer-tokens.ts` (2.7)
 
 ## Conclusion
 MOTO PROTOCOL leverages Solana's SPL and Metaplex standards for an efficient token system, optimized through debugging (e.g., 96% faster batch processing, 2.7). Its modular design supports future growth, ensuring compatibility with Solana's ecosystem.
+
