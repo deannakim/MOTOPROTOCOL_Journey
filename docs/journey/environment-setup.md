@@ -1,133 +1,173 @@
-# Environment Setup
+# Environment Setup Guide – MOTO PROTOCOL SPL Token Project
+*Last Updated: March 4, 2025*
 
-This document describes how to configure your local development environment for the **MOTO PROTOCOL SPL Token Project**. It includes:
-
-1. Checking and switching Node.js versions
-2. Managing PNPM versions
-3. Handling build or installation errors
-4. Adjusting file structures for TypeScript compilation
-5. Example screenshots of each step
-
-> **Note:** These steps are demonstrated on a Windows environment, but the general approach applies to other OS as well.
+This guide helps you set up the development environment for the MOTO PROTOCOL SPL Token Project on Solana Devnet. Built from my own debugging journey (see `debugging-notes.md`), it's designed to get you started quickly—whether you're new to Solana or a seasoned developer—while avoiding the pitfalls I encountered.
 
 ---
 
-## 1. Checking Node.js Versions
+## Prerequisites
+Here's what you need, refined through trial and error:
 
-When working with Metaplex or Umi-based projects, Node.js 16 LTS or 18 LTS is recommended to avoid compatibility issues. Non-LTS or cutting-edge versions (like 22.x) may cause errors with workspaces or build tools.
+- **Node.js**: v16.20.0 (v22.x breaks Metaplex compatibility).
+  - Install with `nvm`:
+    ```bash
+    nvm install 16.20.0
+    nvm use 16.20.0
+    node -v  # Should show 16.20.0
+    ```
+- **TypeScript**: For running `.ts` scripts.
+  - Install globally: `npm install -g ts-node`
+- **PNPM**: v7.x (matches Node 16; v9.x needs Node 18+).
+  - Install: `npm install -g pnpm@7`
+  - Verify: `pnpm -v`
+- **Solana CLI**: For wallet and Devnet tasks.
+  - Install:
+    ```bash
+    sh -c "$(curl -sSfL https://release.solana.com/stable/install)"
+    export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
+    solana --version
+    ```
+- **Stable Internet**: Essential for RPC calls (unstable connections caused `fetch failed` errors).
 
-1. **Check your current Node version and list installed versions:**
+---
 
-```sh
-node -v
-nvm list
+## Setup Steps
+Follow these steps to build a working environment:
+
+### 1. Clone the Repository
+Get the project:
+```bash
+git clone https://github.com/yourusername/MOTOPROTOCOL_Journey.git
+cd MOTOPROTOCOL_Journey
 ```
 
-Switch to Node 16 or 18 if necessary:
-
-```sh
-nvm install 16.20.0
-nvm use 16.20.0
-# or
-nvm install 18.14.0
-nvm use 18.14.0
+### 2. Install Dependencies
+Add the core libraries:
+```bash
+pnpm install @solana/web3.js @solana/spl-token @metaplex-foundation/mpl-token-metadata @metaplex-foundation/js dotenv chalk
 ```
 
-Verify your active Node.js version:
+**Fix**: If you see "Unsupported URL Type 'workspace:*'", reinstall PNPM 7.x with Node 16.
 
-```sh
-node -v
+### 3. Configure TypeScript
+Set up tsconfig.json in the root:
+```json
+{
+  "compilerOptions": {
+    "target": "es2020",
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "outDir": "dist"
+  },
+  "include": ["src/**/*", "docs/**/*"],
+  "exclude": ["node_modules"]
+}
 ```
 
-![Node Versions Check](../../.github/images/setup/environment-setup-node-versions.png)
-*In this image, you can see the commands node -v and nvm list, showing Node.js versions 18.14.0, 22.13, and 16.20.0.*
+Move .ts files to src/ if not already:
+```bash
+mkdir src
+mv *.ts src/
+```
+**Why?** Prevents "No inputs were found" errors.
 
-## 2. Package Manager Setup
-
-### 2.1 PNPM vs. Node Version
-- If you are on Node 16, you often need PNPM 7.x to avoid errors.
-- If you are on Node 18, you can generally use the latest PNPM (9.x or above).
-
-Check your PNPM version:
-```sh
-pnpm -v
+### 4. Set Up Solana Wallet
+Create and fund a test wallet:
+```bash
+solana-keygen new --outfile docs/examples/basic/my_wallet.json
+solana airdrop 2 $(solana-keygen pubkey docs/examples/basic/my_wallet.json) --url https://rpc.ankr.com/solana_devnet
 ```
 
-If PNPM requires Node 18 but you want Node 16 (or vice versa), you might see errors like `ERROR: This version of pnpm requires at least Node.js v18.12`.
+**Tip**: Keep ~0.5 SOL for fees (learned from transfer failures).
 
-```sh
-npm uninstall -g pnpm
-npm install -g pnpm@7
+### 5. Configure Environment
+Edit config/config.ts:
+```typescript
+export const CONFIG = {
+  RPC_URL: process.env.RPC_URL || "https://rpc.ankr.com/solana_devnet",
+  WALLET_FILE: process.env.WALLET_FILE || "./docs/examples/basic/my_wallet.json",
+  TOKEN_ADDRESS: process.env.TOKEN_ADDRESS || "",
+  TOKEN_DECIMALS: 9,
+  MINT_AMOUNT: 1000000
+};
 ```
 
-![Package Manager Setup](../../.github/images/setup/package-manager-setup.png)
-*Demonstrates running pnpm -v, uninstalling, reinstalling PNPM, etc.*
+Optional .env for flexibility:
+```bash
+echo "RPC_URL=https://rpc.ankr.com/solana_devnet" >> .env
+echo "WALLET_FILE=./docs/examples/basic/my_wallet.json" >> .env
+```
 
-## 3. Handling PNPM Installation Errors
+### 6. Mint a Test Token
+Test your setup by minting a token:
+```bash
+npm run mint:test-tokens
+```
 
-Sometimes installing or upgrading PNPM leads to immediate errors (e.g., "Unsupported URL Type 'workspace:*'").
+This auto-updates TOKEN_ADDRESS in config.ts—no manual edits needed!
 
-![PNPM Install Error](../../.github/images/setup/pnpm-install-error.png)
-*Here you can see the user running pnpm -v, then npm uninstall -g pnpm, npm install -g pnpm@7, and an error occurs.*
+Verify: `npm run example:info`
 
-## 4. Attempting a Build (PNPM)
-
-After installing or updating PNPM, you'll typically run:
-
-```sh
-pnpm install
+### 7. Build and Run
+Compile and test:
+```bash
 pnpm run build
+npm run example:balance
 ```
 
-![PNPM Build Error](../../.github/images/setup/pnpm-build-error.png)
-*Shows a user running pnpm install and pnpm run build with resulting errors.*
+**Fix**: If builds fail, check dist/ paths or delete conflicting .js files.
 
-## 5. File Structure Setup
+## Real-World Tips from Debugging
+These lessons saved me hours:
 
-When working with TypeScript, you often need a src folder (referenced in tsconfig.json). If your .ts files are in the root folder, you'll see an error about "No inputs were found."
+1. **Network Stability**: Use https://rpc.ankr.com/solana_devnet over the default RPC if fetch failed occurs. Add retries:
+```typescript
+async function withRetry(fn, maxRetries = 3) {
+  for (let i = 0; i < maxRetries; i++) {
+    try { return await fn(); } catch (e) {
+      console.log(`Retry ${i + 1}/${maxRetries}`);
+      await new Promise(r => setTimeout(r, 2000));
+    }
+  }
+}
+```
 
-Steps:
-1. Create src/
-2. Move .ts files into src/
-3. Verify or update tsconfig.json to include "src/**/*"
+2. **Metaplex Setup**: Use keypairIdentity for wallet auth, not direct Keypair passing (fixed TS2345 errors).
 
-![File Structure Setup](../../.github/images/setup/file-structure-setup.png)
-*Demonstrates using mkdir src, move *.ts src/, and ls src.*
+3. **Automation**: Auto-updating config.ts cut setup time by 96% (644s to 25s for batch processes).
 
-## 6. Dist Folder and Build Errors
+## FAQ & Troubleshooting
 
-If you create a dist/ folder and move .js files there manually, TypeScript or PNPM may not know where to place compiled outputs.
+**Q1**: "TypeScript errors about missing names or top-level await?"
+**A1**: Set tsconfig.json "target" to "es2020" and add import/export statements.
 
-![Dist Build Error](../../.github/images/setup/dist-build-error.png)
-*Shows the user doing mkdir dist, move *.js dist, and then pnpm run build failing.*
+**Q2**: "Unsupported URL Type 'workspace:*'?"
+**A2**: Match PNPM 7.x with Node 16, or PNPM 9.x with Node 18.
 
-## 7. Final Build Success
+**Q3**: "fetch failed or network errors?"
+**A3**: Switch to https://rpc.ankr.com/solana_devnet in config.ts.
 
-Sometimes you'll need to remove or rename a problematic file to fix a TypeScript conflict. After that, re-running pnpm run build might succeed.
+**Q4**: "No inputs were found in config file?"
+**A4**: Ensure .ts files are in src/ and tsconfig.json includes "src/**/*".
 
-![Build Error Resolved](../../.github/images/setup/build-error-resolved.png)
-*Shows the user deleting the problematic file and re-running the build successfully.*
+**Q5**: "Insufficient balance" errors?
+**A5**: Check token balance (npm run example:balance) and request SOL.
 
-## 8. Tips & FAQ
+**Q6**: "Metadata not found (NotEnoughBytesError)?"
+**A6**: Mint with npm run mint:test-tokens or use a token with metadata.
 
-**Q1. "I keep getting TypeScript errors about missing names or top-level await."**  
-A1: Ensure your tsconfig.json includes "target": "es2020" or higher (like "esnext") and that your code has import or export statements at the top if using top-level await.
+## Conclusion
+This setup aligns Node.js, PNPM, TypeScript, and Solana Devnet for the MOTO PROTOCOL project. By centralizing configs, automating updates, and dodging version mismatches, you'll avoid the headaches I faced—like 644-second batch runs! For deeper insights, check debugging-notes.md.
 
-**Q2. "Unsupported URL Type 'workspace:' error."**  
-A2: Usually a mismatch in Node.js ↔ PNPM versions. Switch to Node 16 or 18 and use a PNPM version that supports it.
+Happy coding! Questions? Reach out to the MOTO PROTOCOL team.
 
-**Q3. "Resource in use" error on Windows when deleting a folder.**  
-A3: Close all terminals/explorer windows referencing that folder, or open a new admin PowerShell to remove it.
-
-**Q4. "No inputs were found in config file" (TypeScript error).**  
-A4: Check your tsconfig.json include paths (e.g., "src/**/*") and ensure your .ts files are inside src/.
-
-## 9. Conclusion
-
-By aligning Node.js (16 or 18) with the correct PNPM version (7.x for Node 16, 9.x for Node 18) and maintaining a consistent file structure for TypeScript, you can avoid most environment setup issues. If errors persist, refer to the screenshots above or the FAQ for common troubleshooting steps.
-
-For more details, see:
+## Resources
 - [Node.js Official Site](https://nodejs.org/)
-- [PNPM Documentation](https://pnpm.io/)
+- [PNPM Documentation](https://pnpm.io/documentation)
 - [TypeScript Docs](https://www.typescriptlang.org/docs/)
-- [nvm-windows on GitHub](https://github.com/coreybutler/nvm-windows)
+- [Solana Docs](https://docs.solana.com/)
+- [Metaplex Docs](https://docs.metaplex.com/)
