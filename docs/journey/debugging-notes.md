@@ -5,24 +5,24 @@ This document chronicles the debugging journey for the MOTO PROTOCOL SPL Token P
 
 ## Table of Contents
 1. [Project Setup Challenges](#project-setup-challenges)  
-   - 1.1 [Node Version Conflicts (2025-02-25)](#node-version-conflicts)  
-   - 1.2 [Package Manager Issues (2025-02-25)](#package-manager-issues)  
-   - 1.3 [PNPM Installation Errors (2025-02-25)](#pnpm-installation-errors)  
-   - 1.4 [Build Process Errors (2025-02-25)](#build-process-errors)  
-   - 1.5 [File Structure Issues (2025-02-25)](#file-structure-issues)  
-   - 1.6 [Distribution Folder Issues (2025-02-25)](#distribution-folder-issues)  
-   - 1.7 [JSON Parse Error in package.json (2025-02-26)](#json-parse-error)  
+   - 1.1 [Node Version Conflicts (2025-02-25)]
+   - 1.2 [Package Manager Issues (2025-02-25)]
+   - 1.3 [PNPM Installation Errors (2025-02-25)]
+   - 1.4 [Build Process Errors (2025-02-25)]
+   - 1.5 [File Structure Issues (2025-02-25)]
+   - 1.6 [Distribution Folder Issues (2025-02-25)]
+   - 1.7 [JSON Parse Error in package.json (2025-02-26)]
 2. [SPL Token Development & Automation](#spl-token-development--automation)  
-   - 2.1 [TypeScript Compilation Errors in check-balance.ts (2025-02-26)](#typescript-compilation-errors)  
-   - 2.2 [Successful Balance Check Implementation (2025-02-26)](#successful-balance-check)  
-   - 2.3 [Token Info Display Issue in token-info.ts (2024-02-26)](#token-info-display-issue)  
-   - 2.4 [Transfer Example Code Update (2024-02-26)](#transfer-example-update)  
-   - 2.5 [Wallet File Path Issue (2024-02-26)](#wallet-file-path-issue)  
-   - 2.6 [Token Transfer Test Failed (2024-02-26)](#token-transfer-test-failed)  
-   - 2.7 [Batch Process Test Plan & Debugging (2024-02-26 to 2025-02-27)](#batch-process-debugging)  
-   - 2.8 [Config.ts Update & Token Address Management (2025-02-27)](#config-ts-update)  
-   - 2.9 [Network Errors & RPC Issues (2025-03-04)](#network-errors)  
-   - 2.10 [Metaplex API Compatibility Challenges (2025-03-04)](#metaplex-api-compatibility)  
+   - 2.1 [TypeScript Compilation Errors in check-balance.ts (2025-02-26)]
+   - 2.2 [Successful Balance Check Implementation (2025-02-26)]
+   - 2.3 [Token Info Display Issue in token-info.ts (2024-02-26)]
+   - 2.4 [Transfer Example Code Update (2024-02-26)]
+   - 2.5 [Wallet File Path Issue (2024-02-26)]
+   - 2.6 [Token Transfer Test Failed (2024-02-26)]
+   - 2.7 [Batch Process Test Plan & Debugging (2024-02-26 to 2025-02-27)]
+   - 2.8 [Config.ts Update & Token Address Management (2025-02-27)]
+   - 2.9 [Network Errors & RPC Issues (2025-03-04)]
+   - 2.10 [Metaplex API Compatibility Challenges (2025-03-04)]
 3. [Key Learnings & Best Practices](#key-learnings--best-practices)  
 4. [Common Issues & Solutions](#common-issues--solutions)  
 5. [Next Steps](#next-steps)
