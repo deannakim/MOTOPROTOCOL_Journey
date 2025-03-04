@@ -93,5 +93,5 @@ Minimal structure from `mint-test-tokens.ts` (3.1):
 
 ┌──────────┐ ┌──────────────┐ ┌─────────────────┐
 │ Create │ │ Generate │ │ Update Metadata │
-│ Token ├──►│ ATA ├──►│ with Metaplex │
+│ Token ├───►│ ATA ├───►│ with Metaplex │
 └──────────┘ └──────────────┘ └─────────────────┘
