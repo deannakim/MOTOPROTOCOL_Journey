@@ -1,7 +1,7 @@
 # MOTO PROTOCOL API Reference
 *Last Updated: March 4, 2025*
 
-This reference details the MOTO PROTOCOL SDK functions for Solana blockchain interaction, refined through my debugging journey (see `../journey/debugging-notes.md`). It's a practical guide for developers and a showcase of DevRel/Technical Writing skills.
+This reference details the MOTO PROTOCOL SDK functions for interacting with the Solana blockchain. It has been refined through an extensive debugging journey (see `../journey/debugging-notes.md`) and serves as a practical guide for developers.
 
 ## Table of Contents
 1. [Token Management](#token-management)
@@ -11,106 +11,83 @@ This reference details the MOTO PROTOCOL SDK functions for Solana blockchain int
    - [fetchMetadata](#fetchmetadata)
 3. [Account Management](#account-management)
    - [checkBalance](#checkbalance)
+4. [Error Handling](#error-handling)
 
 ## Token Management
 
 ### mintTestTokens
-Creates a test SPL token with metadata on Solana Devnet.
+**Description:**  
+Creates a test SPL token on Solana Devnet with metadata attached via the Metaplex API.
 
-**Execution**:
+**Execution:**
 ```bash
 npm run mint:test-tokens
 ```
 
-**Implementation**: `src/mint-test-tokens.ts`
-- Uses config.ts for wallet (`docs/examples/basic/my_wallet.json`) and RPC settings
-- Creates a mint, issues initial supply, and adds metadata via Metaplex
-- Returns: Logs token details:
-  - mintAddress: Mint public key
-  - Metadata: Name, symbol, URI
+**Implementation:**
+- Located in `src/mint-test-tokens.ts`
+- Uses wallet file from config.ts
+- Creates mint, issues initial supply, and attaches metadata
 
-**Example**:
+**Example:**
 ```javascript
 // Run via script
 console.log("Run `npm run mint:test-tokens` to create a token.");
-// Output: Mint Address: <MINT_ADDRESS>
+// Expected Output: Mint Address: <MINT_ADDRESS>
 ```
 
 ### transferTokens
-Transfers tokens between accounts non-interactively.
+**Description:**  
+Transfers tokens between accounts in a non-interactive manner.
 
-**Execution**:
+**Execution:**
 ```bash
 npm run example:transfer -- <TOKEN_ADDRESS> <AMOUNT> <RECIPIENT_ADDRESS>
 ```
 
-**Implementation**: `src/transfer-tokens.ts`
-- Takes command-line args for token address, amount, and recipient
+**Implementation:**
+- Found in `src/transfer-tokens.ts`
 - Uses wallet from config.ts
-- Returns: Transaction signature
-
-**Example**:
-```javascript
-// Run via script
-console.log("Run `npm run example:transfer -- <TOKEN> 10 <RECIPIENT>`");
-// Output: Transfer complete: <SIGNATURE>
-```
+- Takes command-line arguments
 
 ## Metadata Management
 
 ### fetchMetadata
+**Description:**  
 Retrieves token metadata with fallback handling.
 
-**Execution**:
+**Execution:**
 ```bash
 npm run example:info
 ```
 
-**Implementation**: `src/token-info.ts`
-- Fetches metadata using Metaplex's fetchMetadata
-- Falls back to defaults (e.g., name: "Unknown") if unavailable
-- Returns: Logs metadata (name, symbol, URI)
-
-**Example**:
-```javascript
-// Run via script
-console.log("Run `npm run example:info` to check metadata.");
-// Output: Name: MOTO Journey Test Token, Symbol: MJTEST
-```
+**Implementation:**
+- Located in `src/token-info.ts`
+- Fetches metadata with fallback values
+- Logs name, symbol, and URI
 
 ## Account Management
 
 ### checkBalance
+**Description:**  
 Displays wallet balance for SOL and tokens.
 
-**Execution**:
+**Execution:**
 ```bash
 npm run example:balance
 ```
 
-**Implementation**: `src/check-balance.ts`
-- Uses config.ts wallet to query balances via @solana/web3.js
-- Returns: Logs balance (e.g., "1 SOL, 0 MTP")
-
-**Example**:
-```javascript
-// Run via script
-console.log("Run `npm run example:balance` to check balance.");
-// Output: Wallet balance: 1 SOL, MTP: 0
-```
+**Implementation:**
+- Found in `src/check-balance.ts`
+- Uses config.ts wallet details
+- Queries balances via @solana/web3.js
 
 ## Error Handling
-Functions include robust error handling from debugging insights:
+Each function includes robust error handling:
 
-- `fetch failed`: Network issues (2.9). Switch RPC to https://rpc.ankr.com/solana_devnet
-- `NotEnoughBytesError`: Missing metadata (2.3). Ensure token is minted with metadata
-- `TS2345`: API mismatches (2.10). Use keypairIdentity with Metaplex
-- `Insufficient Funds`: Check balance before transfers (2.6)
-
-**Example**:
+### Network Errors
 ```javascript
 try {
-  // Run any script
   console.log("Running `npm run example:transfer`...");
 } catch (error) {
   if (error.message.includes("fetch failed")) {
@@ -123,7 +100,11 @@ try {
 }
 ```
 
-## Conclusion
-This API reflects the MOTO PROTOCOL's streamlined token operations, optimized through debugging (e.g., batch runtime cut from 644s to 25s, 2.7). Check the `examples/` directory for full scripts and `../journey/debugging-notes.md` for the journey behind these functions.
+Common error types:
+- Network Errors: Switch RPC URL to https://rpc.ankr.com/solana_devnet
+- Metadata Issues: NotEnoughBytesError indicates missing metadata
+- API Mismatches: TS2345 requires keypairIdentity with Metaplex
+- Insufficient Funds: Balance checks before transfers
 
-*Note: Suggest enhancements via the MOTO PROTOCOL team!*
+## Conclusion
+MOTO PROTOCOL leverages Solana's SPL Token and Metaplex Token Metadata standards for a secure and efficient token ecosystem. Future enhancements will include a dedicated guide once metadata integration is fully stabilized.
