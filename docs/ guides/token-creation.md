@@ -1,172 +1,119 @@
-# Token Creation Guide
+# MOTO Protocol Token Creation Guide
 
-This guide walks you through creating a Solana SPL token using the required development environment and Solana CLI tools.
+## Token Metadata Configuration
 
-## Prerequisites
+```typescript:src/token-metadata.ts
+export const TOKEN_METADATA = {
+  name: "MOTO Journey Test Token",
+  symbol: "MJTEST",
+  uri: "https://raw.githubusercontent.com/yourusername/MOTOPROTOCOL_Journey/main/assets/token-metadata.json",
+};
+```
 
-Before starting, ensure you have:
-- Node.js (LTS version 16 or 18)
-- PNPM or NPM
-- Solana CLI tools
-- Basic understanding of Solana wallets and keypairs
+## Token Creation Function
 
-![Node Version Check](../../.github/images/setup/environment-setup-node-versions.png)
-*Verify your Node.js version is compatible*
+```typescript:src/mint-test-tokens.ts
+async function createTokenWithMetadata() {
+  try {
+    console.log(chalk.cyan("Creating SPL token..."));
+    const connection = new Connection(CONFIG.RPC_URL, "confirmed");
+    const wallet = Keypair.fromSecretKey(
+      Uint8Array.from(JSON.parse(fs.readFileSync(CONFIG.WALLET_FILE, "utf8")))
+    );
+    const metaplex = Metaplex.make(connection).use(keypairIdentity(wallet));
 
-## Environment Setup
+    // 1. Create Mint
+    const { mint } = await metaplex.tokens().createMint({
+      decimals: CONFIG.TOKEN_DECIMALS,
+      mintAuthority: wallet.publicKey,
+    });
 
-### 1. Verify Node.js and Package Manager
+    // 2. Mint Initial Supply
+    await metaplex.tokens().mint({
+      mintAddress: mint.address,
+      amount: { 
+        basisPoints: BigInt(CONFIG.MINT_AMOUNT * 10 ** CONFIG.TOKEN_DECIMALS), 
+        currency: { 
+          decimals: CONFIG.TOKEN_DECIMALS, 
+          symbol: TOKEN_METADATA.symbol, 
+          namespace: "spl-token" 
+        } 
+      },
+      toOwner: wallet.publicKey,
+    });
 
+    // 3. Create Metadata
+    await metaplex.nfts().create({
+      uri: TOKEN_METADATA.uri,
+      name: TOKEN_METADATA.name,
+      symbol: TOKEN_METADATA.symbol,
+      sellerFeeBasisPoints: 0,
+      mint: mint.address,
+      tokenOwner: wallet.publicKey,
+      updateAuthority: wallet.publicKey,
+    });
+
+    console.log(chalk.green("✓ Token created!"));
+    console.log(`Mint Address: ${chalk.yellow(mint.address.toBase58())}`);
+  } catch (error) {
+    console.error(chalk.red("Error:"), error instanceof Error ? error.message : error);
+  }
+}
+```
+
+## Execution Instructions
+
+1. Create Token:
 ```bash
-# Check Node.js version
-node -v
-
-# Verify PNPM installation
-pnpm -v
+ts-node src/mint-test-tokens.ts
 ```
 
-![Package Manager Setup](../../.github/images/setup/package-manager-setup.png)
-*Ensure your package manager is properly configured*
-
-### 2. Install Dependencies
-
-If you encounter any installation issues:
-
+2. Verify Token:
 ```bash
-# Install specific PNPM version if needed
-npm uninstall -g pnpm
-npm install -g pnpm@7
+npm run example:info    # Check metadata
+npm run example:balance # Verify balance
 ```
 
-![PNPM Install Error](../../.github/images/setup/pnpm-install-error.png)
-*Troubleshooting package manager installation*
-
-### 3. Project Structure Setup
-
-Organize your files properly:
-```
-my-token-project/
-├── src/
-│   └── create-token.ts
-├── dist/
-├── package.json
-└── tsconfig.json
-```
-
-![File Structure](../../.github/images/setup/file-structure-setup.png)
-*Proper project structure organization*
-
-## Token Creation Process
-
-### 1. Build Configuration
-
-Ensure your build configuration is correct:
-
-```bash
-pnpm install
-pnpm run build
-```
-
-![Build Process](../../.github/images/setup/pnpm-build-error.png)
-*Handle any build configuration issues*
-
-### 2. Create SPL Token
-
-```bash
-# Create new token
-spl-token create-token
-
-# Create token account
-spl-token create-account <TOKEN_MINT_ADDRESS>
-
-# Mint initial supply
-spl-token mint <TOKEN_MINT_ADDRESS> <AMOUNT>
-```
-
-![Build Success](../../.github/images/setup/build-error-resolved.png)
-*Successful token creation process*
-
-## Step-by-Step Guide
-
-### 1. Generate Keypair
-```bash
-solana-keygen new --outfile ~/.config/solana/id.json
-```
-
-### 2. Create Token
-```bash
-spl-token create-token
-# Output: Creating token...
-# Token: <YOUR_TOKEN_MINT_ADDRESS>
-```
-
-### 3. Create Token Account
-```bash
-spl-token create-account <YOUR_TOKEN_MINT_ADDRESS>
-# Output: Creating account...
-# Account: <YOUR_TOKEN_ACCOUNT>
-```
-
-### 4. Mint Tokens
-```bash
-spl-token mint <YOUR_TOKEN_MINT_ADDRESS> 1000
-# Output: Minting 1000 tokens
-```
-
-### 5. Verify Balance
-```bash
-spl-token balance <YOUR_TOKEN_MINT_ADDRESS>
-spl-token accounts
-```
-
-## Troubleshooting
+## Troubleshooting Guide
 
 ### Common Issues
 
-1. **Node Version Conflicts**
-   - Use nvm to switch Node versions
-   - Ensure PNPM compatibility
+1. **Node Version Conflicts**:
+   - Fix: `nvm use 16.20.0`
 
-2. **Build Errors**
-   - Check TypeScript configuration
-   - Verify dependencies
-   - Confirm file paths
+2. **Build Errors**:
+   - Fix: Check tsconfig.json paths, reinstall dependencies (pnpm install)
 
-3. **Solana CLI Issues**
-   - Verify network connection
-   - Check wallet balance
-   - Confirm RPC endpoint
+3. **Solana Issues**:
+   - Network Errors: Switch to `https://rpc.ankr.com/solana_devnet`
+   - Insufficient Balance: Airdrop SOL
+   - Metadata Errors: Ensure token includes metadata
 
 ## Best Practices
 
-1. **Environment Management**
-   - Use LTS Node versions
-   - Match PNPM version with Node
-   - Keep CLI tools updated
+### Environment Management
+- Use Node 16.20.0, PNPM 7.x
+- Centralize configs in config.ts
 
-2. **Security**
-   - Backup keypairs
-   - Use separate development wallets
-   - Test on devnet first
+### Security
+- Backup my_wallet.json
+- Test on Devnet first
 
-3. **Development Flow**
-   - Document mint addresses
-   - Track token accounts
-   - Monitor transactions
+### Development Flow
+- Automate TOKEN_ADDRESS updates
+- Document mint addresses in README
 
 ## Next Steps
 
-1. [Set up token metadata](./metadata-setup.md)
-2. Configure token properties
-3. Deploy to mainnet
-4. Add to liquidity pools
+1. Add metadata (covered above)
+2. Configure advanced properties (e.g., freeze authority)
+3. Deploy to Mainnet
+4. Integrate with liquidity pools
 
 ## Resources
 
 - [Solana CLI Tools](https://docs.solana.com/cli)
 - [SPL Token Program](https://spl.solana.com/token)
-- [Metaplex Documentation](https://docs.metaplex.com/)
+- [Metaplex Documentation](https://docs.metaplex.com)
 
----
-
-> **Note:** For detailed troubleshooting, refer to our [debugging notes](../journey/debugging-notes.md) and [lessons learned](../journey/lessons-learned.md).
+*Note: Refer to ../journey/debugging-notes.md for detailed fixes—e.g., cutting batch times from 644s to 25s!*
