@@ -142,35 +142,69 @@ async function withRetry(fn, maxRetries = 3) {
 
 ## FAQ & Troubleshooting
 
+### Q1: TypeScript errors about missing names or top-level await?
+**Solution:**
+- Set tsconfig.json "target" to "es2020"
+- Add import/export statements
+- Example:
+  ```json
+  {
+    "compilerOptions": {
+      "target": "es2020"
+    }
+  }
+  ```
 
-**Q1**: "TypeScript errors about missing names or top-level await?"
+### Q2: Unsupported URL Type 'workspace:*'?
+**Solution:**
+- Match PNPM version with Node.js:
+  - Node 16: Use PNPM 7.x
+  - Node 18: Use PNPM 9.x
+- Run:
+  ```bash
+  npm install -g pnpm@7
+  ```
 
-**A1**: Set tsconfig.json "target" to "es2020" and add import/export statements.
+### Q3: fetch failed or network errors?
+**Solution:**
+- Update RPC URL in config.ts:
+  ```typescript
+  export const CONFIG = {
+    RPC_URL: "https://rpc.ankr.com/solana_devnet"
+  };
+  ```
 
+### Q4: No inputs were found in config file?
+**Solution:**
+- Check file structure:
+  - Move .ts files to src/
+  - Update tsconfig.json:
+    ```json
+    {
+      "include": ["src/**/*"]
+    }
+    ```
 
-**Q2**: "Unsupported URL Type 'workspace:*'?"
+### Q5: Insufficient balance errors?
+**Solution:**
+1. Check current balance:
+   ```bash
+   npm run example:balance
+   ```
+2. Request SOL if needed:
+   ```bash
+   solana airdrop 2 --url https://rpc.ankr.com/solana_devnet
+   ```
 
-**A2**: Match PNPM 7.x with Node 16, or PNPM 9.x with Node 18.
-
-
-**Q3**: "fetch failed or network errors?"
-
-**A3**: Switch to https://rpc.ankr.com/solana_devnet in config.ts.
-
-
-**Q4**: "No inputs were found in config file?"
-
-**A4**: Ensure .ts files are in src/ and tsconfig.json includes "src/**/*".
-
-
-**Q5**: "Insufficient balance" errors?
-
-**A5**: Check token balance (npm run example:balance) and request SOL.
-
-
-**Q6**: "Metadata not found (NotEnoughBytesError)?"
-
-**A6**: Mint with npm run mint:test-tokens or use a token with metadata.
+### Q6: Metadata not found (NotEnoughBytesError)?
+**Solution:**
+- Either:
+  1. Mint with metadata:
+     ```bash
+     npm run mint:test-tokens
+     ```
+  2. Or use existing token with metadata
+  3. Or rely on fallback values in token-info.ts
 
 ## Conclusion
 This setup aligns Node.js, PNPM, TypeScript, and Solana Devnet for the MOTO PROTOCOL project. By centralizing configs, automating updates, and dodging version mismatches, you'll avoid the headaches I faced—like 644-second batch runs! For deeper insights, check debugging-notes.md.
