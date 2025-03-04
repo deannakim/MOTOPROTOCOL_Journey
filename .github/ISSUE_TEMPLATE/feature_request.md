@@ -1,25 +1,34 @@
+
 ---
 name: Feature Request
-about: Propose new features or enhancements to improve the MOTO PROTOCOL SPL Token Project.
-title: "[FEATURE] "
+about: Propose enhancements to improve the MOTO PROTOCOL SPL Token Project
+title: '[FEATURE REQUEST] '
 labels: enhancement
-assignees: ""
+assignees: ''
 ---
 
 ## Is your feature request related to a problem?
-Please describe the issue or limitation you are encountering in detail. For example, if you feel that the current token creation, metadata management, or DEX listing process could be improved, explain what specific challenges or inefficiencies exist.
+Describe the issue or limitation you’re facing with the MOTO PROTOCOL SPL Token Project. For example:
+- "Manual updates to `config.ts` TOKEN_ADDRESS after minting are error-prone."
+- "Metadata errors (`NotEnoughBytesError`) lack clear diagnostics."
+- "No automated tests for token operations."
 
 ## Describe the solution you'd like
-Outline the feature or enhancement you wish to see implemented. Describe how it would work and the benefits it would bring to the project. Examples might include:
-- An integrated dashboard for marketing automation.
-- Enhanced tools for managing liquidity pools and automated market making.
-- Improved error reporting and debugging tools for token metadata updates.
+Outline the feature or enhancement you’d like to see. Examples aligned with the project:
+- **Automated Config Updates:** A script that updates `config.ts` TOKEN_ADDRESS post-minting.
+- **Enhanced Metadata Tools:** A CLI tool to validate and preview metadata before deployment.
+- **Test Suite:** Automated Jest tests for `check-balance.ts` and `transfer-tokens.ts`.
+Explain how it works and its benefits (e.g., "Reduces manual errors, saves time").
 
 ## Describe alternatives you've considered
-Detail any alternative solutions or features you have explored. Explain why these alternatives did not fully address the problem and why your proposed solution is a better fit.
+Detail other solutions you’ve explored and why they’re insufficient. Examples:
+- "Manual `config.ts` edits work but are tedious and error-prone."
+- "Using Mainnet for metadata testing was considered but too costly for Devnet focus."
+- "Checked existing Metaplex CLI tools, but they lack TypeScript integration."
 
 ## Additional context
-Add any other context, screenshots, or links to related documentation that could help illustrate your feature request. This may include:
-- Links to external resources or similar projects.
-- Mockups or diagrams.
-- Any other supporting information.
+Provide supporting details to illustrate your request:
+- **Affected Scripts:** [e.g., `mint-test-tokens.ts`]
+- **External Resources:** [e.g., link to Metaplex docs]
+- **Mockups/Screenshots:** [e.g., a sample CLI output]
+- Any other info (e.g., "Inspired by Solana Cookbook automation examples").
