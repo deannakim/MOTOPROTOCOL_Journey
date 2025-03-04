@@ -1,183 +1,124 @@
-# Metadata Setup Guide
+# Token Metadata Integration Guide - MOTO PROTOCOL
 
-This guide explains how to set up metadata for your SPL Token on the Solana blockchain using the Metaplex JS SDK and related tools.
+## Metadata Integration Code
 
-## Prerequisites
-
-Before starting, ensure you have:
-- Node.js (LTS version 16 or 18 recommended)
-- PNPM or NPM (for installing dependencies)
-- Solana CLI (for managing Solana config and keypairs)
-- Cloned repository of the [Metaplex JS SDK](https://github.com/metaplex-foundation/js)
-
-![Node Version Check](../../.github/images/setup/environment-setup-node-versions.png)
-*Verify your Node.js version before proceeding*
-
-## Overview
-
-When creating an SPL token on Solana, you'll need to:
-1. Create/mint an SPL token
-2. Initialize metadata account via Metaplex
-3. Update metadata (name, symbol, URI)
-4. Verify on-chain metadata
-
-## Step-by-Step Guide
-
-### 1. Environment Setup
-
-First, ensure your development environment is properly configured:
-
-```bash
-# Check Node.js version
-node -v
-
-# Verify PNPM installation
-pnpm -v
-```
-
-![Package Manager Setup](../../.github/images/setup/package-manager-setup.png)
-*Setting up package manager with correct versions*
-
-### 2. Project Structure
-
-Organize your project files properly:
-
-```bash
-my-token-project/
-├── src/
-│   └── create-metadata.ts
-├── dist/
-├── package.json
-└── tsconfig.json
-```
-
-![Project Structure](../../.github/images/setup/file-structure-setup.png)
-*Proper project structure setup*
-
-### 3. Install Dependencies
-
-```bash
-# Install required packages
-pnpm install @metaplex-foundation/js @solana/web3.js
-```
-
-If you encounter any installation errors:
-
-![PNPM Install Error](../../.github/images/setup/pnpm-install-error.png)
-*Troubleshooting package installation issues*
-
-### 4. Build Configuration
-
-Set up your TypeScript configuration:
-
-```json
-{
-  "compilerOptions": {
-    "target": "es2020",
-    "module": "commonjs",
-    "outDir": "./dist"
-  }
-}
-```
-
-![Build Process](../../.github/images/setup/pnpm-build-error.png)
-*Handling build configuration issues*
-
-### 5. Create Metadata Script
-
+### Mint With Metadata Function
 ```typescript
-import { Metaplex, keypairIdentity } from "@metaplex-foundation/js";
-import { Connection, clusterApiUrl, Keypair, PublicKey } from "@solana/web3.js";
-import fs from "fs";
-
-const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
-const wallet = Keypair.fromSecretKey(
-  Uint8Array.from(JSON.parse(fs.readFileSync("./keypair.json", "utf-8")))
-);
-const metaplex = Metaplex.make(connection).use(keypairIdentity(wallet));
-
-async function createMetadata() {
-  const mintAddress = new PublicKey("YOUR_TOKEN_MINT_ADDRESS");
-  
+async function mintWithMetadata() {
   try {
-    const { nft } = await metaplex.nfts().create({
-      uri: "https://example.com/token-metadata.json",
-      name: "MOTO Protocol Token",
-      symbol: "MOTO",
-      mintAddress: mintAddress,
-      sellerFeeBasisPoints: 0,
+    console.log(chalk.cyan("Creating token with metadata..."));
+    const connection = new Connection(CONFIG.RPC_URL, "confirmed");
+    const wallet = Keypair.fromSecretKey(Uint8Array.from(JSON.parse(fs.readFileSync(CONFIG.WALLET_FILE, "utf8"))));
+    const metaplex = Metaplex.make(connection).use(keypairIdentity(wallet));
+
+    // 1. Create Mint
+    const { mint } = await metaplex.tokens().createMint({
+      decimals: 9,
+      mintAuthority: wallet.publicKey
     });
-    
-    console.log("Metadata created successfully:", nft);
+
+    // 2. Mint Initial Supply
+    await metaplex.tokens().mint({
+      mintAddress: mint.address,
+      amount: { 
+        basisPoints: BigInt(1000000 * 10 ** 9), 
+        currency: { 
+          decimals: 9, 
+          symbol: TOKEN_METADATA.symbol, 
+          namespace: "spl-token" 
+        } 
+      },
+      toOwner: wallet.publicKey
+    });
+
+    // 3. Create Metadata
+    const { nft } = await metaplex.nfts().create({
+      uri: TOKEN_METADATA.uri,
+      name: TOKEN_METADATA.name,
+      symbol: TOKEN_METADATA.symbol,
+      sellerFeeBasisPoints: 0,
+      mint: mint.address,
+      tokenOwner: wallet.publicKey,
+      updateAuthority: wallet.publicKey
+    });
+
+    console.log(chalk.green("✓ Token and metadata created!"));
+    console.log(`Mint Address: ${chalk.yellow(mint.address.toBase58())}`);
+    console.log(`Metadata: ${JSON.stringify(nft.metadata, null, 2)}`);
   } catch (error) {
-    console.error("Error creating metadata:", error);
+    console.error(chalk.red("Error:"), error instanceof Error ? error.message : error);
   }
 }
-
-createMetadata();
 ```
 
-### 6. Build and Run
+## Configuration Setup
 
+### Update config/config.ts
+```typescript
+import * as dotenv from "dotenv";
+dotenv.config();
+
+export const CONFIG = {
+  RPC_URL: process.env.RPC_URL || "https://rpc.ankr.com/solana_devnet",
+  WALLET_FILE: process.env.WALLET_FILE || "./docs/examples/basic/my_wallet.json",
+  TOKEN_ADDRESS: process.env.TOKEN_ADDRESS || ""
+};
+```
+
+## Build and Run Instructions
+
+1. Execute the metadata creation:
 ```bash
-# Build the project
-pnpm run build
-
-# Run the script
-node dist/create-metadata.js
+ts-node src/mint-with-metadata.ts
 ```
+*Note: Output includes the mint address—update config.ts manually or automate it (see debugging-notes.md).*
 
-![Build Success](../../.github/images/setup/build-error-resolved.png)
-*Successful build and execution*
+2. Verify metadata:
+```bash
+npm run example:info
+```
 
 ## Troubleshooting Guide
 
 ### Common Issues
 
-1. **Node Version Conflicts**
-   - Use `nvm` to switch Node versions
-   - Ensure compatibility with PNPM
+1. **Node Version Conflicts**:
+   - Fix: `nvm use 16.20.0`
 
-2. **Build Errors**
-   - Check TypeScript configuration
-   - Verify file paths and imports
-   - Ensure proper directory structure
+2. **Network Errors (fetch failed)**:
+   - Fix: Use `https://rpc.ankr.com/solana_devnet` in .env
 
-3. **Runtime Errors**
-   - Verify wallet keypair exists
-   - Check network connection
-   - Validate mint address
+3. **Metadata Errors (NotEnoughBytesError)**:
+   - Fix: Ensure token is minted with metadata above
+
+4. **Build Failures**:
+   - Fix: Validate tsconfig.json paths and file locations
 
 ## Best Practices
 
-1. **Version Management**
-   - Use Node.js LTS versions
-   - Match PNPM version with Node.js
-   - Document version requirements
+### Version Management
+- Use Node.js 16.20.0, PNPM 7.x
 
-2. **Error Handling**
-   - Implement try-catch blocks
-   - Log errors properly
-   - Provide clear error messages
+### Error Handling
+- Add try-catch and clear logs (e.g., chalk)
 
-3. **Security**
-   - Never commit private keys
-   - Use environment variables
-   - Test on devnet first
+### Automation
+- Script config.ts updates post-minting
+
+### Security
+- Store keys in .env
+- Test on Devnet first
 
 ## Resources
 
-- [Solana SPL Token Documentation](https://spl.solana.com/token)
-- [Metaplex JS SDK](https://github.com/metaplex-foundation/js)
-- [Solana Web3.js](https://solana-labs.github.io/solana-web3.js)
+- [Solana SPL Token Docs](https://spl.solana.com/token)
+- [Metaplex JS SDK](https://docs.metaplex.com/)
+- [Solana Web3.js](https://solana-labs.github.io/solana-web3.js/)
 
 ## Next Steps
 
-1. Create token metadata JSON
-2. Update metadata if needed
-3. Verify on-chain data
-4. Monitor transaction status
+1. Host metadata JSON online
+2. Update metadata dynamically
+3. Test on Mainnet
 
----
-
-> **Note:** Keep your development environment updated and refer to our [debugging notes](../journey/debugging-notes.md) for detailed troubleshooting steps.
+*Note: See ../journey/debugging-notes.md for detailed fixes and my journey optimizing this process.*
