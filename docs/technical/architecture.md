@@ -90,11 +90,11 @@ Minimal structure from `mint-test-tokens.ts` (3.1):
 ## Data Flow
 
 ### Token Creation and Metadata Update
-┌──────────┐    ┌──────────────┐    ┌─────────────────┐
-│  Create  │    │   Generate   │    │ Update Metadata │
-│  Token   ├───►│     ATA      ├───►│  with Metaplex  │
-└──────────┘    └──────────────┘    └─────────────────┘
 
+    ┌──────────┐    ┌──────────────┐    ┌─────────────────┐
+    │  Create  │    │   Generate   │    │ Update Metadata │
+    │  Token   ├───►│     ATA      ├───►│  with Metaplex  │
+    └──────────┘    └──────────────┘    └─────────────────┘
 
 1. Create SPL token (createMint, 3.1)
 2. Implicitly handle ATAs (mint, 3.1)
@@ -102,12 +102,10 @@ Minimal structure from `mint-test-tokens.ts` (3.1):
 
 ### Token Transfer Process
 
-
-┌──────────┐    ┌──────────────┐    ┌──────────────┐    ┌──────────┐
-│  Check   │    │   Validate   │    │   Execute    │    │  Confirm │
-│ Balance  ├───►│  Parameters  ├───►│  Transfer    ├───►│  Result  │
-└──────────┘    └──────────────┘    └──────────────┘    └──────────┘
-
+    ┌──────────┐    ┌──────────────┐    ┌──────────────┐    ┌──────────┐
+    │  Check   │    │   Validate   │    │   Execute    │    │  Confirm │
+    │ Balance  ├───►│  Parameters  ├───►│  Transfer    ├───►│  Result  │
+    └──────────┘    └──────────────┘    └──────────────┘    └──────────┘
 
 1. Verify balance (check-balance.ts, 2.2)
 2. Use command-line args (transfer-tokens.ts, 2.7)
