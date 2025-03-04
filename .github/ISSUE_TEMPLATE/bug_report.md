@@ -1,48 +1,32 @@
+---
 name: Bug Report
-about: Create a report to help us improve MOTO Protocol
+about: Report a bug to help improve the MOTO PROTOCOL SPL Token Project
 title: '[BUG] '
 labels: bug
 assignees: ''
 ---
 
 ## Bug Description
-A clear and concise description of what the bug is.
+A clear and concise description of the bug encountered in the MOTO PROTOCOL SPL Token Project.
 
 ## Steps To Reproduce
-1. Environment setup (e.g., network configuration)
-2. Command or code executed
-3. Error message received
+1. **Environment Setup:**
+   - Node.js version used (e.g., v16.20.0 from `nvm use 16.20.0`)
+   - PNPM version (e.g., 7.x)
+   - Network configuration (e.g., RPC URL: `https://rpc.ankr.com/solana_devnet`)
+   - Script file (e.g., `check-balance.ts`, `mint-test-tokens.ts`)
+2. **Command or Code Executed:**
+   - Example: `npm run example:balance`
+3. **Error Message Received:**
+   - Paste the exact error (e.g., `fetch failed`, `TS2345`).
 
 ## Expected Behavior
-A clear and concise description of what you expected to happen.
+What you expected to happen (e.g., "Token balance should display 1 SOL and 0 MTP").
 
 ## Actual Behavior
-A clear and concise description of what actually happened.
+What actually happened (e.g., "Script crashed with 'NotEnoughBytesError'").
 
 ## Code Snippet / Error Log
 ```bash
 # Add your error message or code snippet here
-```
-
-## Environment
-- Node.js version: [e.g., v22.13.1]
-- npm version: [e.g., v10.9.2]
-- Solana CLI version: [e.g., v2.1.5]
-- Network: [e.g., devnet, mainnet-beta]
-- OS: [e.g., Windows 10, Ubuntu 20.04]
-
-## Configuration
-```bash
-# Output of 'solana config get'
-Config File: C:\Users\username\.config\solana\cli\config.yml
-RPC URL: https://api.devnet.solana.com
-WebSocket URL: wss://api.devnet.solana.com/ (computed)
-Keypair Path: C:\Users\username\.config\solana\id.json
-Commitment: confirmed
-```
-
-## Additional Context
-Add any other context about the problem here, such as:
-- Token mint address
-- Transaction signature
-- Wallet address
+# Example: "fetch failed: connection closed before message completed"
