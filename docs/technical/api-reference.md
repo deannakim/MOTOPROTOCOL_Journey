@@ -1,220 +1,122 @@
 # MOTO PROTOCOL API Reference
+*Last Updated: March 4, 2025*
 
-This document provides a comprehensive reference for the MOTO PROTOCOL SDK functions that interact with the Solana blockchain.
+This reference details the MOTO PROTOCOL SDK functions for Solana blockchain interaction, refined through my debugging journey (see `../journey/debugging-notes.md`). It's a practical guide for developers and a showcase of DevRel/Technical Writing skills.
 
 ## Table of Contents
-
-- [Token Management](#token-management)
-  - [createTestToken](#createtesttoken)
-  - [transferTokens](#transfertokens)
-  - [transferTotalSupply](#transfertotalsupply)
-  - [disableMinting](#disableminting)
-- [Metadata Management](#metadata-management)
-  - [createTokenMetadata](#createtokenmetadata)
-  - [checkMetadata](#checkmetadata)
-- [Account Management](#account-management)
-  - [changeTokenAuthority](#changetokenauthority)
-  - [checkAccountInfo](#checkaccountinfo)
+1. [Token Management](#token-management)
+   - [mintTestTokens](#minttesttokens)
+   - [transferTokens](#transfertokens)
+2. [Metadata Management](#metadata-management)
+   - [fetchMetadata](#fetchmetadata)
+3. [Account Management](#account-management)
+   - [checkBalance](#checkbalance)
 
 ## Token Management
 
-### createTestToken
+### mintTestTokens
+Creates a test SPL token with metadata on Solana Devnet.
 
-Creates a new test token on the Solana devnet.
+**Execution**:
+```bash
+npm run mint:test-tokens
+```
 
-**Parameters**: None (uses wallet from `my_wallet.json`)
-
-**Returns**: Object containing token information
-- `tokenMint`: The address of the token mint
-- `tokenAccount`: The address of the token account
-- `owner`: The address of the token owner
-- `decimals`: The number of decimal places
-- `totalSupply`: The total supply of tokens
+**Implementation**: `src/mint-test-tokens.ts`
+- Uses config.ts for wallet (`docs/examples/basic/my_wallet.json`) and RPC settings
+- Creates a mint, issues initial supply, and adds metadata via Metaplex
+- Returns: Logs token details:
+  - mintAddress: Mint public key
+  - Metadata: Name, symbol, URI
 
 **Example**:
-```typescript
-import { createTestToken } from './src/create-test-token';
-
-// Create a new test token
-const tokenInfo = await createTestToken();
-console.log(`Token created: ${tokenInfo.tokenMint}`);
+```javascript
+// Run via script
+console.log("Run `npm run mint:test-tokens` to create a token.");
+// Output: Mint Address: <MINT_ADDRESS>
 ```
 
 ### transferTokens
+Transfers tokens between accounts non-interactively.
 
-Transfers tokens from one account to another.
-
-**Parameters**:
-- `connection`: Solana connection object
-- `owner`: Keypair of the token owner
-- `sourceAccount`: PublicKey of the source token account
-- `destinationAccount`: PublicKey of the destination token account
-- `amount`: Amount of tokens to transfer (in base units)
-
-**Returns**: Transaction signature
-
-**Example**:
-```typescript
-import { Connection, PublicKey, Keypair } from "@solana/web3.js";
-import { transferTokens } from './src/transfer-tokens';
-
-const connection = new Connection("https://api.devnet.solana.com");
-const owner = Keypair.fromSecretKey(/* wallet secret key */);
-const sourceAccount = new PublicKey("source-account-address");
-const destinationAccount = new PublicKey("destination-account-address");
-const amount = 1000 * 1e9; // 1000 tokens with 9 decimals
-
-const signature = await transferTokens(
-  connection,
-  owner,
-  sourceAccount,
-  destinationAccount,
-  amount
-);
-console.log(`Transfer complete: ${signature}`);
+**Execution**:
+```bash
+npm run example:transfer -- <TOKEN_ADDRESS> <AMOUNT> <RECIPIENT_ADDRESS>
 ```
 
-### transferTotalSupply
-
-Transfers the entire balance of tokens from one account to another.
-
-**Parameters**: None (uses wallet from `my_wallet.json`)
-
-**Returns**: Transaction signature
+**Implementation**: `src/transfer-tokens.ts`
+- Takes command-line args for token address, amount, and recipient
+- Uses wallet from config.ts
+- Returns: Transaction signature
 
 **Example**:
-```typescript
-import { transferTotalSupply } from './src/transfer-total-supply';
-
-// Transfer all tokens from the source account to the destination account
-const signature = await transferTotalSupply();
-console.log(`Transfer complete: ${signature}`);
-```
-
-### disableMinting
-
-Permanently disables the ability to mint new tokens by removing the mint authority.
-
-**Parameters**: None (uses wallet from `my_wallet.json`)
-
-**Returns**: Transaction signature
-
-**Example**:
-```typescript
-import { disableMinting } from './src/disable-minting';
-
-// Disable minting for the token
-const signature = await disableMinting();
-console.log(`Minting disabled: ${signature}`);
+```javascript
+// Run via script
+console.log("Run `npm run example:transfer -- <TOKEN> 10 <RECIPIENT>`");
+// Output: Transfer complete: <SIGNATURE>
 ```
 
 ## Metadata Management
 
-### createTokenMetadata
+### fetchMetadata
+Retrieves token metadata with fallback handling.
 
-Creates metadata for an existing token.
-
-**Parameters**: None (uses wallet from `my_wallet.json` and hardcoded token address)
-
-**Returns**: Transaction signature
-
-**Example**:
-```typescript
-import { createTokenMetadata } from './src/create-metadata-2';
-
-// Create metadata for the token
-const signature = await createTokenMetadata();
-console.log(`Metadata created: ${signature}`);
+**Execution**:
+```bash
+npm run example:info
 ```
 
-### checkMetadata
-
-Retrieves and displays the metadata for a token.
-
-**Parameters**: None (uses hardcoded token address)
-
-**Returns**: None (logs metadata to console)
+**Implementation**: `src/token-info.ts`
+- Fetches metadata using Metaplex's fetchMetadata
+- Falls back to defaults (e.g., name: "Unknown") if unavailable
+- Returns: Logs metadata (name, symbol, URI)
 
 **Example**:
-```typescript
-import { checkMetadata } from './src/check-metadata';
-
-// Check the metadata for the token
-await checkMetadata();
+```javascript
+// Run via script
+console.log("Run `npm run example:info` to check metadata.");
+// Output: Name: MOTO Journey Test Token, Symbol: MJTEST
 ```
 
 ## Account Management
 
-### changeTokenAuthority
+### checkBalance
+Displays wallet balance for SOL and tokens.
 
-Changes the authority for a token account.
-
-**Parameters**:
-- `connection`: Solana connection object
-- `payer`: Keypair of the transaction fee payer
-- `tokenAccount`: PublicKey of the token account
-- `currentAuthority`: Keypair of the current authority
-- `newAuthority`: PublicKey of the new authority
-
-**Returns**: Transaction signature
-
-**Example**:
-```typescript
-import { Connection, PublicKey, Keypair } from "@solana/web3.js";
-import { changeTokenAuthority } from './src/token-authority-config';
-
-const connection = new Connection("https://api.devnet.solana.com");
-const payer = Keypair.fromSecretKey(/* payer secret key */);
-const tokenAccount = new PublicKey("token-account-address");
-const currentAuthority = Keypair.fromSecretKey(/* current authority secret key */);
-const newAuthority = new PublicKey("new-authority-address");
-
-const signature = await changeTokenAuthority(
-  connection,
-  payer,
-  tokenAccount,
-  currentAuthority,
-  newAuthority
-);
-console.log(`Authority changed: ${signature}`);
+**Execution**:
+```bash
+npm run example:balance
 ```
 
-### checkAccountInfo
-
-Retrieves and displays information about token accounts.
-
-**Parameters**: None (uses hardcoded token addresses)
-
-**Returns**: None (logs account information to console)
+**Implementation**: `src/check-balance.ts`
+- Uses config.ts wallet to query balances via @solana/web3.js
+- Returns: Logs balance (e.g., "1 SOL, 0 MTP")
 
 **Example**:
-```typescript
-import { checkAccountInfo } from './src/check-account-info';
-
-// Check information about token accounts
-await checkAccountInfo();
+```javascript
+// Run via script
+console.log("Run `npm run example:balance` to check balance.");
+// Output: Wallet balance: 1 SOL, MTP: 0
 ```
 
 ## Error Handling
+Functions include robust error handling from debugging insights:
 
-All functions include error handling with specific error messages. Common errors include:
+- `fetch failed`: Network issues (2.9). Switch RPC to https://rpc.ankr.com/solana_devnet
+- `NotEnoughBytesError`: Missing metadata (2.3). Ensure token is minted with metadata
+- `TS2345`: API mismatches (2.10). Use keypairIdentity with Metaplex
+- `Insufficient Funds`: Check balance before transfers (2.6)
 
-- `InvalidAccountData`: The account does not exist or is not a token account
-- `TokenAccountNotFoundError`: The specified token account does not exist
-- `TokenInvalidMintError`: The token mint is invalid
-- `TokenInvalidOwnerError`: The owner of the token account is invalid
-- `TokenInsufficientFundsError`: The token account has insufficient funds for the operation
-
-Example of handling errors:
-```typescript
+**Example**:
+```javascript
 try {
-  const signature = await transferTokens(/* parameters */);
-  console.log(`Transfer complete: ${signature}`);
+  // Run any script
+  console.log("Running `npm run example:transfer`...");
 } catch (error) {
-  if (error.message.includes("insufficient funds")) {
-    console.error("Not enough tokens to complete the transfer");
-  } else if (error.message.includes("InvalidAccountData")) {
-    console.error("One of the accounts is invalid");
+  if (error.message.includes("fetch failed")) {
+    console.error("Network error: Switch RPC in config.ts");
+  } else if (error.message.includes("NotEnoughBytesError")) {
+    console.error("Metadata missing: Mint with metadata");
   } else {
     console.error(`Error: ${error.message}`);
   }
@@ -222,5 +124,6 @@ try {
 ```
 
 ## Conclusion
+This API reflects the MOTO PROTOCOL's streamlined token operations, optimized through debugging (e.g., batch runtime cut from 644s to 25s, 2.7). Check the `examples/` directory for full scripts and `../journey/debugging-notes.md` for the journey behind these functions.
 
-This API reference provides the essential functions for interacting with MOTO PROTOCOL tokens on the Solana blockchain. For more detailed examples and use cases, refer to the [examples directory](https://github.com/MOTOPROTOCOL/MOTOPROTOCOL_Journey/tree/main/docs/examples) in the repository.
+*Note: Suggest enhancements via the MOTO PROTOCOL team!*
