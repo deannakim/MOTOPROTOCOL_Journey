@@ -142,25 +142,31 @@ async function withRetry(fn, maxRetries = 3) {
 
 ## FAQ & Troubleshooting
 
+
 **Q1**: "TypeScript errors about missing names or top-level await?"
 
 **A1**: Set tsconfig.json "target" to "es2020" and add import/export statements.
+
 
 **Q2**: "Unsupported URL Type 'workspace:*'?"
 
 **A2**: Match PNPM 7.x with Node 16, or PNPM 9.x with Node 18.
 
+
 **Q3**: "fetch failed or network errors?"
 
 **A3**: Switch to https://rpc.ankr.com/solana_devnet in config.ts.
+
 
 **Q4**: "No inputs were found in config file?"
 
 **A4**: Ensure .ts files are in src/ and tsconfig.json includes "src/**/*".
 
+
 **Q5**: "Insufficient balance" errors?
 
 **A5**: Check token balance (npm run example:balance) and request SOL.
+
 
 **Q6**: "Metadata not found (NotEnoughBytesError)?"
 
