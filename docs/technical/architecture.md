@@ -91,10 +91,10 @@ Minimal structure from `mint-test-tokens.ts` (3.1):
 
 ### Token Creation and Metadata Update
 
-┌──────────┐  ┌──────────────┐  ┌─────────────────┐
-│ Create   │  │ Generate    │  │ Update Metadata │
-│ Token    ├──►│ ATA         ├──►│ with Metaplex   │
-└──────────┘  └──────────────┘  └─────────────────┘
+┌──────────┐   ┌──────────────┐   ┌─────────────────┐
+│ Create   │   │ Generate     │   │ Update Metadata │
+│ Token    ├──►│ ATA          ├──►│ with Metaplex   │
+└──────────┘   └──────────────┘   └─────────────────┘
 
 Create SPL token (createMint, 3.1).
 
@@ -104,10 +104,10 @@ Add metadata (nfts().create, 3.1).
 
 Token Transfer Process
 
-┌──────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────┐
-│ Check    │  │ Validate     │  │ Execute      │  │ Confirm  │
+┌──────────┐   ┌──────────────┐   ┌──────────────┐   ┌──────────┐
+│ Check    │   │ Validate     │   │ Execute      │   │ Confirm  │
 │ Balance  ├──►│ Parameters   ├──►│ Transfer     ├──►│ Result   │
-└──────────┘  └──────────────┘  └──────────────┘  └──────────┘
+└──────────┘   └──────────────┘   └──────────────┘   └──────────┘
 
 Verify balance (check-balance.ts, 2.2).
 
