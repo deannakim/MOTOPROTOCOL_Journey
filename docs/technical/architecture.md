@@ -90,8 +90,53 @@ Minimal structure from `mint-test-tokens.ts` (3.1):
 ## Data Flow
 
 ### Token Creation and Metadata Update
+┌──────────┐    ┌──────────────┐    ┌─────────────────┐
+│  Create  │    │   Generate   │    │ Update Metadata │
+│  Token   ├───►│     ATA      ├───►│  with Metaplex  │
+└──────────┘    └──────────────┘    └─────────────────┘
 
-┌──────────┐ ┌──────────────┐ ┌─────────────────┐
-│ Create │ │ Generate │ │ Update Metadata │
-│ Token ├───►│ ATA ├───►│ with Metaplex │
-└──────────┘ └──────────────┘ └─────────────────┘
+
+1. Create SPL token (createMint, 3.1)
+2. Implicitly handle ATAs (mint, 3.1)
+3. Add metadata (nfts().create, 3.1)
+
+### Token Transfer Process
+
+
+┌──────────┐    ┌──────────────┐    ┌──────────────┐    ┌──────────┐
+│  Check   │    │   Validate   │    │   Execute    │    │  Confirm │
+│ Balance  ├───►│  Parameters  ├───►│  Transfer    ├───►│  Result  │
+└──────────┘    └──────────────┘    └──────────────┘    └──────────┘
+
+
+1. Verify balance (check-balance.ts, 2.2)
+2. Use command-line args (transfer-tokens.ts, 2.7)
+3. Execute and log transfer (2.4)
+
+## Security Considerations
+- **Error Handling**: Detailed logs with chalk (2.4), retries for network issues (3.2)
+- **Key Management**: Wallet at docs/examples/basic/my_wallet.json (2.5), .env usage (3.3)
+- **Validation**: Pre-transfer checks (2.6)
+
+## Scalability and Future Enhancements
+- **Automation**: config.ts updates (2.8, 3.3)
+- **Batch Efficiency**: 644s to 25s (2.7)
+- **Extendable** for future features per Next Steps
+
+## Implementation Examples
+
+### Token Creation
+```bash
+npm run mint:test-tokens
+```
+See `src/mint-test-tokens.ts` (3.1)
+
+### Token Transfer
+```bash
+npm run example:transfer -- <TOKEN_ADDRESS> <AMOUNT> <RECIPIENT>
+```
+See `src/transfer-tokens.ts` (2.7)
+
+## Conclusion
+MOTO PROTOCOL leverages Solana's SPL and Metaplex standards for an efficient token system, optimized through debugging (e.g., 96% faster batch processing, 2.7). Its modular design supports future growth, ensuring compatibility with Solana's ecosystem.
+
