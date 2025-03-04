@@ -6,8 +6,9 @@
   "license": "MIT",
   "dependencies": {
     "@metaplex-foundation/mpl-token-metadata": "^3.4.0",
-    "@metaplex-foundation/umi": "^1.0.0",
-    "@metaplex-foundation/umi-bundle-defaults": "^1.0.0",
+    "@metaplex-foundation/mpl-toolbox": "^0.10.0",
+    "@metaplex-foundation/umi": "^1.1.1",
+    "@metaplex-foundation/umi-bundle-defaults": "^1.1.1",
     "@solana/spl-token": "^0.4.12",
     "@solana/web3.js": "^1.98.0",
     "@types/prompt-sync": "^4.2.3",
@@ -26,10 +27,15 @@
     "start": "ts-node src/index.ts",
     "test": "jest",
     "batch": "ts-node docs/examples/advanced/batch-process.ts",
+    "batch:parallel": "ts-node docs/examples/advanced/batch-process.ts --parallel",
+    "batch:check": "ts-node docs/examples/advanced/batch-process.ts --task=check",
+    "batch:transfer": "ts-node docs/examples/advanced/batch-process.ts --task=transfer",
     "example:balance": "ts-node docs/examples/basic/check-balance.ts",
     "example:info": "ts-node docs/examples/basic/token-info.ts",
     "example:transfer": "ts-node docs/examples/basic/transfer-tokens.ts",
-    "mint:test-tokens": "ts-node docs/examples/basic/mint-test-tokens.ts"
+    "mint:test-tokens": "ts-node docs/examples/basic/mint-test-tokens.ts",
+    "wallet:check": "ts-node docs/examples/utils/check-wallet.js",
+    "clean:logs": "rm -f batch-process-log.txt"
   },
   "repository": {
     "type": "git",
@@ -49,5 +55,8 @@
   "homepage": "https://github.com/MOTOPROTOCOL/MOTOPROTOCOL_Journey#readme",
   "directories": {
     "doc": "docs"
+  },
+  "engines": {
+    "node": ">=16.0.0"
   }
 }
