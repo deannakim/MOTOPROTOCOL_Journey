@@ -1,199 +1,184 @@
-# Troubleshooting Guide
+# Troubleshooting Guide - MOTO PROTOCOL SPL Token Project
+*Last Updated: March 4, 2025*
 
-This guide covers common issues encountered during the MOTO PROTOCOL SPL Token Project setup and development process, along with their solutions.
+This guide addresses common issues during the MOTO PROTOCOL SPL Token Project setup and development, with solutions drawn from my debugging journey (see `../journey/debugging-notes.md`). It's here to save you time and frustration.
+
+---
 
 ## Environment Setup Issues
 
 ### Node.js Version Conflicts
+**Problem**:
+- Incompatible Node.js version (e.g., v22.x breaks Metaplex).
+- PNPM version mismatches.
+- Build failures due to version issues.
 
-![Node Version Issues](../../.github/images/setup/01-node-version.png)
-
-#### Problem
-- Incompatible Node.js version
-- PNPM version conflicts
-- Build failures due to version mismatch
-
-#### Solution
+**Solution**:
 ```bash
 # Check current version
 node -v
 
-# Install and use correct version
+# Install and use compatible version
 nvm install 16.20.0
 nvm use 16.20.0
-# or
-nvm install 18.14.0
-nvm use 18.14.0
+
+# Install ts-node for .ts scripts
+npm install -g ts-node
 ```
 
-### Project Structure Issues
+## Project Structure Issues
 
-![Project Structure](../../.github/images/setup/02-project-structure.png)
+### Problem:
+- Incorrect file organization (e.g., .ts files in root).
+- Missing directories (src/, dist/).
+- TypeScript compilation errors.
 
-#### Problem
-- Incorrect file organization
-- Missing directories
-- TypeScript compilation errors
-
-#### Solution
+### Solution:
 ```bash
-# Create proper directory structure
-mkdir src dist
+# Set up proper structure
+mkdir -p src dist docs/examples/basic
 mv *.ts src/
+touch docs/examples/basic/my_wallet.json
 ```
 
 ## Build Process Issues
 
 ### Build Errors
+**Problem**:
+- Incomplete tsconfig.json.
+- Dependency conflicts.
+- Compilation failures.
 
-![Build Errors](../../.github/images/setup/03-build-error.png)
-
-#### Problem
-- TypeScript configuration issues
-- Dependency conflicts
-- Compilation failures
-
-#### Solution
-1. Verify tsconfig.json:
+**Solution**:
+Verify tsconfig.json:
 ```json
 {
   "compilerOptions": {
     "target": "es2020",
     "module": "commonjs",
+    "esModuleInterop": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
     "outDir": "./dist"
-  }
+  },
+  "include": ["src/**/*", "docs/**/*"],
+  "exclude": ["node_modules"]
 }
 ```
 
-2. Check dependencies:
+Install dependencies:
 ```bash
-pnpm install
+pnpm install @solana/web3.js @solana/spl-token @metaplex-foundation/js dotenv chalk
 pnpm run build
 ```
 
 ### Successful Build
-
-![Build Success](../../.github/images/setup/04-build-success.png)
+Confirm with: `ls dist/` (Unix) or `dir dist\` (Windows).
 
 ## Common Issues & Solutions
 
 ### 1. PNPM Installation Issues
+**Problem**:
+"Error: This version of pnpm requires at least Node.js v18.12".
 
-#### Problem
+**Solution**:
 ```bash
-Error: This version of pnpm requires at least Node.js v18.12
-```
-
-#### Solution
-```bash
-# Option 1: Upgrade Node.js
-nvm install 18.14.0
-nvm use 18.14.0
-
-# Option 2: Install compatible PNPM
+# Use compatible PNPM with Node 16
 npm uninstall -g pnpm
 npm install -g pnpm@7
+pnpm -v  # Should show 7.x
 ```
 
 ### 2. TypeScript Compilation Errors
+**Problem**:
+- "Cannot find module" or "No inputs were found".
+- TS2345: Keypair/Metaplex type mismatches.
 
-#### Problem
-```bash
-Error: Cannot find module
-Error: No inputs were found in config file
+**Solution**:
+- Check tsconfig.json includes "src/**/*".
+- Update Metaplex calls:
+```typescript
+const metaplex = Metaplex.make(connection).use(keypairIdentity(wallet));
 ```
 
-#### Solution
-- Verify file paths in tsconfig.json
-- Check import statements
-- Ensure proper directory structure
+### 3. Solana CLI & Runtime Issues
+**Problem**:
+- fetch failed network errors.
+- Insufficient balance for transactions.
+- NotEnoughBytesError in token info.
 
-### 3. Solana CLI Issues
-
-#### Problem
-- Network connection errors
-- Insufficient balance
-- Transaction failures
-
-#### Solution
+**Solution**:
 ```bash
-# Check Solana configuration
+# Check config and network
 solana config get
+solana balance --url https://rpc.ankr.com/solana_devnet
 
-# Verify balance
-solana balance
+# Airdrop SOL
+solana airdrop 2 --url https://rpc.ankr.com/solana_devnet
 
-# Airdrop on devnet (if needed)
-solana airdrop 2
+# Mint with metadata to avoid metadata errors
+npm run mint:test-tokens
 ```
 
 ## Best Practices
 
-### 1. Environment Verification
-- Always check Node.js version
-- Verify PNPM compatibility
-- Test on devnet first
+### Environment Verification:
+- Always use Node 16.20.0, PNPM 7.x.
+- Test on Devnet before Mainnet.
 
-### 2. Project Setup
-- Follow recommended structure
-- Use version control
-- Document configuration
+### Project Setup:
+- Centralize configs in config.ts or .env.
+- Use Git for version control.
 
-### 3. Error Handling
-- Log all errors
-- Document solutions
-- Share findings
+### Error Handling:
+- Log errors with chalk for clarity.
+- Automate retries for network issues:
+```typescript
+async function withRetry(fn, maxRetries = 3) {
+  for (let i = 0; i < maxRetries; i++) {
+    try { return await fn(); } catch (e) { await new Promise(r => setTimeout(r, 2000)); }
+  }
+}
+```
 
 ## Quick Reference
 
 ### Environment Checks
 ```bash
-# Node version
-node -v
-
-# PNPM version
-pnpm -v
-
-# Solana CLI version
+node -v        # Should be 16.20.0
+pnpm -v        # Should be 7.x
 solana --version
 ```
 
 ### Build Process
 ```bash
-# Clean install
 rm -rf node_modules
 pnpm install
-
-# Build project
 pnpm run build
 ```
 
 ### Common Commands
 ```bash
-# Create token
-spl-token create-token
+# Mint token with metadata
+npm run mint:test-tokens
 
 # Check balance
-spl-token balance <TOKEN_ADDRESS>
+npm run example:balance
 
-# View accounts
-spl-token accounts
+# View token info
+npm run example:info
 ```
 
 ## Additional Resources
-
-- [Environment Setup Guide](../journey/environment-setup.md)
-- [Debugging Notes](../journey/debugging-notes.md)
-- [Lessons Learned](../journey/lessons-learned.md)
+- Environment Setup Guide (../guides/environment-setup.md)
+- Debugging Notes (../journey/debugging-notes.md)
+- Lessons Learned (../journey/lessons-learned.md)
 
 ## Getting Help
+If issues persist:
+- Check GitHub Issues.
+- Review debugging-notes.md.
+- Submit a bug report with logs and steps.
 
-If you encounter issues not covered in this guide:
-
-1. Check the [GitHub Issues](https://github.com/your-org/moto-protocol/issues)
-2. Review the [Debugging Notes](../journey/debugging-notes.md)
-3. Submit a detailed bug report using our [template](../../.github/ISSUE_TEMPLATE/bug_report.md)
-
----
-
-> **Note:** This guide is regularly updated based on user feedback and new issues encountered. Last updated: [Current Date]
+*Note: This guide evolves with user feedback and new findings—share your challenges to improve it!*
