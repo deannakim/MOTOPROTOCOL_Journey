@@ -186,7 +186,3 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ---
 
-### Final Notes
-- This updated root README is now error-free, consistent with your debugging notes and code, and polished for your U.S. audience.  
-- It's ready for your GitHub root directory and enhances your DevRel/Technical Writing portfolio.  
-- Let me know if you need further tweaks or help with linked docs (e.g., `token-creation.md`)! Great work so far! 😊
