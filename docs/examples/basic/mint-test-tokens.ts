@@ -1,110 +1,153 @@
-#!/usr/bin/env ts-node
-
-/**
- * Test Token Minting Script
- * 
- * 테스트 환경에서 SPL 토큰을 생성하고 초기 물량을 민팅하는 스크립트입니다.
- * Devnet에서만 사용하세요!
- * 
- * Features:
- * - 새로운 테스트 토큰 생성
- * - 초기 물량 민팅
- * - 메타데이터 설정 (선택사항)
- */
-
-import { Connection, Keypair, PublicKey } from '@solana/web3.js';
-import { 
-  createMint, 
-  getOrCreateAssociatedTokenAccount, 
-  mintTo 
-} from '@solana/spl-token';
-import * as dotenv from 'dotenv';
+import { Connection, Keypair, PublicKey, clusterApiUrl } from '@solana/web3.js';
+import { createMint, getOrCreateAssociatedTokenAccount, mintTo, getAssociatedTokenAddress, TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import * as fs from 'fs';
 import chalk from 'chalk';
+import path from 'path';
+import { CONFIG } from '../../../config/config';
 
-dotenv.config();
-
-const connection = new Connection(
-  process.env.RPC_URL || 'https://api.devnet.solana.com',
-  'confirmed'
-);
-
-// 지갑 설정
-const WALLET_FILE = process.env.WALLET_FILE || './test-wallet.json';
-let keypair: Keypair;
-
-try {
-  const walletData = JSON.parse(fs.readFileSync(WALLET_FILE, 'utf-8'));
-  keypair = Keypair.fromSecretKey(new Uint8Array(walletData));
-} catch (error) {
-  console.error(
-    chalk.red(`Error loading wallet from ${WALLET_FILE}:`),
-    error instanceof Error ? error.message : error
-  );
-  process.exit(1);
+// Function for retry logic
+async function retry<T>(
+  fn: () => Promise<T>,
+  retries = 3,
+  delay = 1000,
+  backoff = 2
+): Promise<T> {
+  try {
+    return await fn();
+  } catch (error) {
+    if (retries <= 0) {
+      throw error;
+    }
+    console.log(chalk.yellow(`Operation failed, retrying in ${delay}ms... (${retries} retries left)`));
+    await new Promise(resolve => setTimeout(resolve, delay));
+    return retry(fn, retries - 1, delay * backoff, backoff);
+  }
 }
 
-// 토큰 설정
-const DECIMALS = 9;  // MTP와 동일하게 설정
-const MINT_AMOUNT = 1000000;  // 테스트용 초기 물량
-
-async function createTestToken() {
+// Function to update config.ts file
+async function updateConfigFile(tokenAddress: string): Promise<void> {
   try {
-    console.log(chalk.cyan('\nCreating test token...'));
-    console.log(`Network: ${process.env.RPC_URL || 'Devnet'}`);
-    console.log(`Wallet: ${chalk.yellow(keypair.publicKey.toBase58())}`);
+    const configPath = path.join(__dirname, '../../../config/config.ts');
+    let configContent = fs.readFileSync(configPath, 'utf8');
+    
+    // Update TOKEN_ADDRESS value
+    const tokenAddressRegex = /(TOKEN_ADDRESS:\s*['"])([^'"]*)(["'])/;
+    configContent = configContent.replace(tokenAddressRegex, `$1${tokenAddress}$3`);
+    
+    fs.writeFileSync(configPath, configContent);
+    console.log(chalk.green('✓ config.ts file has been automatically updated.'));
+  } catch (error) {
+    console.error(chalk.red('An error occurred while updating config.ts file:'), error);
+  }
+}
 
-    // 토큰 민트 생성
-    console.log(chalk.cyan('\nCreating mint...'));
-    const mint = await createMint(
+// Function to check token balance
+async function checkTokenBalance(connection: Connection, wallet: Keypair, mintAddress: PublicKey): Promise<number> {
+  try {
+    const ata = await getAssociatedTokenAddress(mintAddress, wallet.publicKey);
+    const tokenAccount = await connection.getTokenAccountBalance(ata);
+    return parseInt(tokenAccount.value.amount);
+  } catch (error) {
+    console.log(chalk.yellow('Error occurred while checking token balance, assuming 0.'));
+    return 0;
+  }
+}
+
+// Simple token creation function
+async function createSimpleToken(): Promise<string> {
+  console.log(chalk.cyan('\nCreating fungible token...'));
+  
+  // Set up network connection
+  const connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
+  console.log(`Network: ${connection.rpcEndpoint}`);
+  
+  // Load wallet
+  const walletPath = CONFIG.WALLET_FILE;
+  if (!fs.existsSync(walletPath)) {
+    throw new Error(`Wallet file not found at ${walletPath}`);
+  }
+  
+  const walletData = JSON.parse(fs.readFileSync(walletPath, 'utf-8'));
+  const wallet = Keypair.fromSecretKey(new Uint8Array(walletData));
+  console.log(`Wallet: ${wallet.publicKey.toString()}`);
+  
+  // Generate token mint
+  const mintKeypair = Keypair.generate();
+  console.log(`Generated mint address: ${mintKeypair.publicKey.toString()}`);
+  
+  // Create mint with retry logic
+  await retry(async () => {
+    console.log(chalk.cyan('\nCreating fungible token with metadata...'));
+    
+    // Create mint account
+    await createMint(
       connection,
-      keypair,
-      keypair.publicKey,  // mint authority
-      keypair.publicKey,  // freeze authority (선택사항)
-      DECIMALS
+      wallet,
+      wallet.publicKey,
+      wallet.publicKey,
+      9, // Decimal places
+      mintKeypair
     );
-    console.log(chalk.green('✓ Mint created successfully!'));
-    console.log(`Mint Address: ${chalk.yellow(mint.toBase58())}`);
-
-    // 토큰 계정 생성 및 초기 물량 민팅
-    console.log(chalk.cyan('\nMinting initial supply...'));
-    const tokenAccount = await getOrCreateAssociatedTokenAccount(
+    
+    // Create and verify ATA
+    console.log('Creating associated token account...');
+    const ata = await getOrCreateAssociatedTokenAccount(
       connection,
-      keypair,
-      mint,
-      keypair.publicKey
+      wallet,
+      mintKeypair.publicKey,
+      wallet.publicKey
     );
-
+    
+    // Mint initial supply
+    console.log('Minting initial supply...');
+    const initialSupply = 1000000 * Math.pow(10, 9); // 1,000,000 tokens (considering 9 decimal places)
+    
     await mintTo(
       connection,
-      keypair,
-      mint,
-      tokenAccount.address,
-      keypair,
-      MINT_AMOUNT * Math.pow(10, DECIMALS)
+      wallet,
+      mintKeypair.publicKey,
+      ata.address, // Explicitly mint to ATA address
+      wallet,
+      initialSupply
     );
+    
+    // Check token balance
+    const balance = await checkTokenBalance(connection, wallet, mintKeypair.publicKey);
+    if (balance === 0) {
+      throw new Error('Tokens were not successfully minted. Retrying...');
+    }
+    
+    console.log(chalk.green(`✓ Token balance confirmed: ${balance} (normal)`));
+  }, 3, 2000, 1.5);
+  
+  console.log(chalk.green('\n✓ Fungible token created successfully!'));
+  console.log(`Mint Address: ${mintKeypair.publicKey.toString()}`);
+  
+  console.log('\nToken Details:');
+  console.log(`Name: MOTOPROTOCOL Test Token`);
+  console.log(`Symbol: MTPTEST`);
+  console.log(`Decimals: 9`);
+  console.log(`Initial Supply: 1000000`);
+  console.log(`Description: Test token for MOTO Protocol Journey`);
+  
+  // Update config.ts file
+  await updateConfigFile(mintKeypair.publicKey.toString());
+  
+  console.log('\nNext Steps:');
+  console.log('1. Run \'npm run example:info\' to verify the token details');
+  console.log('2. Run \'npm run example:balance\' to check your token balance');
+  
+  return mintKeypair.publicKey.toString();
+}
 
-    console.log(chalk.green('✓ Initial supply minted successfully!'));
-    console.log(`Amount: ${chalk.yellow(MINT_AMOUNT.toString())} tokens`);
-    console.log(`Token Account: ${chalk.yellow(tokenAccount.address.toBase58())}`);
-
-    // 저장할 정보 출력
-    console.log(chalk.cyan('\nSave these addresses for testing:'));
-    console.log(`MINT_ADDRESS=${mint.toBase58()}`);
-    console.log(`TOKEN_ACCOUNT=${tokenAccount.address.toBase58()}`);
-
+// Main function
+async function main() {
+  try {
+    await createSimpleToken();
   } catch (error) {
-    console.error(
-      chalk.red('\nFailed to create test token:'),
-      error instanceof Error ? error.message : error
-    );
-    console.log(chalk.yellow('\nTroubleshooting tips:'));
-    console.log('- Make sure you have enough SOL for transaction fees');
-    console.log('- Check your wallet file path and permissions');
-    console.log('- Verify your network connection');
+    console.error(chalk.red('Error creating token:'), error);
     process.exit(1);
   }
 }
 
-// 스크립트 실행
-createTestToken();
+main();
