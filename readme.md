@@ -60,15 +60,14 @@ Get started in minutes:
 
 ## Screenshots
 
-- Token Minting & Transfer: Mint Success (/.github/images/setup/17-mint-transfer-success.png)
-  Successful token creation and transfer output.
-- Balance & Info Check: Token Info Fixed (/.github/images/setup/15-fixed-output.png)
-  Token details with metadata fallback after fixing NotEnoughBytesError.
-- Debugging Example: JSON Parse Error (/.github/images/setup/06-json-parse-error.png)
-  Common setup issue from early debugging.
-- TypeScript Fix: TS Compilation Fix (/.github/images/setup/13-typescript-fix.png)
-  Resolved TypeScript errors in check-balance.ts.
-
+- **Token Minting & Transfer**: [Mint Success](/.github/images/setup/17-mint-transfer-success.png)  
+  *Successful token creation and transfer output.*
+- **Balance & Info Check**: [Token Info Fixed](/.github/images/setup/15-fixed-output.png)  
+  *Token details with metadata fallback after fixing `NotEnoughBytesError`.*
+- **Debugging Example**: [JSON Parse Error](/.github/images/setup/06-json-parse-error.png)  
+  *Common setup issue from early debugging.*
+- **TypeScript Fix**: [TS Compilation Fix](/.github/images/setup/13-typescript-fix.png)  
+  *Resolved TypeScript errors in `check-balance.ts`.*
 ## Installation
 
 ### Prerequisites
