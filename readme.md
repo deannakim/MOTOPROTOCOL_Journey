@@ -1,188 +1,138 @@
 # MOTO PROTOCOL SPL Token Project
 
-A Solana-based project for creating, managing, and interacting with SPL tokens, complete with basic metadata support and future DEX integration. Designed with detailed debugging notes to support the developer community.
+[![Node.js](https://img.shields.io/badge/Node.js-16.20.0-green)](https://nodejs.org/)
+[![Solana Devnet](https://img.shields.io/badge/Solana-Devnet-blue)](https://solana.com/)
+[![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
+[![TypeScript](https://img.shields.io/badge/TypeScript-Enabled-blue)](https://www.typescriptlang.org/)
 
-## 📌 Quick Start
+A Solana-based project for creating and managing SPL tokens on Devnet, with basic metadata support in progress. Built with detailed debugging notes to empower the developer community—perfect for learning and experimentation.
 
-Get up and running in minutes:
+---
 
-1. **Install Prerequisites**: Node.js, npm, TypeScript (`npm install -g ts-node`), and Solana CLI.  
+##  Quick Start
 
-2. **Clone the Repository**:  
+Get started in minutes:
+
+1. **Clone the Repo**:
    ```bash
    git clone https://github.com/yourusername/MOTOPROTOCOL_Journey.git
    cd MOTOPROTOCOL_Journey
    ```
 
-3. **Install Dependencies**:  
+2. **Install Dependencies**:
    ```bash
    npm install
    ```
 
-4. **Create a Test Token**:  
+3. **Set Up Wallet**:
+   ```bash
+   solana-keygen new --outfile docs/examples/basic/my_wallet.json
+
+   solana airdrop 2 $(solana-keygen pubkey docs/examples/basic/my_wallet.json) --url https://rpc.ankr.com/solana_devnet
+   ```
+
+4. **Mint a Test Token**:
    ```bash
    npm run mint:test-tokens
    ```
 
-5. **Verify Configuration**: Configuration auto-updates; check TOKEN_ADDRESS in config/config.ts.  
-
-6. **Verify**:  
+5. **Verify**:
    ```bash
-   npm run example:info
+   npm run example:info    # Check token details
+   npm run example:balance # See wallet balance
    ```
 
 ## Features
 
-- **SPL Token Creation**: Generate fungible tokens on Solana Devnet.  
-- **Basic Metadata Support**: Attach names, symbols, and URIs (full Metaplex integration planned).  
-- **Token Operations**: Check balances, transfer tokens, and more.  
-- **Future Plans**: DEX integration and marketing automation tools.
+- SPL Token Creation: Generate fungible tokens on Solana Devnet.
+- Metadata Support: Basic metadata (name, symbol, URI) in development via Metaplex.
+- Token Operations: Balance checks, transfers, and batch processing.
+- Future Goals: Full metadata stability, DEX integration.
+
+## Tech Stack
+
+- Blockchain: Solana Devnet
+- Token Standard: SPL Token
+- Metadata: Metaplex (in progress)
+- Language: TypeScript
+- Runtime: Node.js 16.20.0
+- Dependencies: @solana/web3.js, @solana/spl-token, @metaplex-foundation/js, chalk, dotenv
+
+## Screenshots
+
+- Token Minting & Transfer: Mint Success (/.github/images/setup/17-mint-transfer-success.png)
+  Successful token creation and transfer output.
+- Balance & Info Check: Token Info Fixed (/.github/images/setup/15-fixed-output.png)
+  Token details with metadata fallback after fixing NotEnoughBytesError.
+- Debugging Example: JSON Parse Error (/.github/images/setup/06-json-parse-error.png)
+  Common setup issue from early debugging.
+- TypeScript Fix: TS Compilation Fix (/.github/images/setup/13-typescript-fix.png)
+  Resolved TypeScript errors in check-balance.ts.
 
 ## Installation
 
 ### Prerequisites
 
-- **Node.js & npm**: Install the latest LTS version from nodejs.org.  
-- **TypeScript**: `npm install -g ts-node`.  
-- **Solana CLI**: For wallet management and Devnet interactions.
-
-Verify installation:  
-```bash
-solana --version
-```
-
-If not installed:  
-
-**Windows**:  
-```powershell
-curl https://release.solana.com/stable/install -o solana-install.ps1
-powershell -ExecutionPolicy Bypass -File solana-install.ps1
-$env:Path += ";C:\Users\<YourUsername>\.local\share\solana\install\active_release\bin"
-setx PATH "$env:Path" /M
-```
-
-**MacOS/Linux**:  
-```bash
-sh -c "$(curl -sSfL https://release.solana.com/stable/install)"
-export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
-```
-
-Confirm:  
-```bash
-solana --version
-```
+- Node.js: v16.20.0 (nvm use 16.20.0)
+- TypeScript: npm install -g ts-node
+- Solana CLI: Install Guide
+  ```bash
+  solana --version  # Verify
+  ```
 
 ### Setup
 
-1. **Install Project Dependencies**:  
-   ```bash
-   npm install @solana/web3.js @solana/spl-token @metaplex-foundation/mpl-token-metadata @metaplex-foundation/js dotenv chalk
-   ```
-
-2. **Configure Environment**: Edit config/config.ts with your wallet (default: docs/examples/basic/my_wallet.json) and token settings.
-
-## Test Environment Setup
-
-### Create a Test Wallet
-```bash
-solana-keygen new --outfile docs/examples/basic/my_wallet.json
-solana airdrop 2 $(solana-keygen pubkey docs/examples/basic/my_wallet.json) --url https://rpc.ankr.com/solana_devnet
-```
-
-### Mint Test Tokens
-```bash
-npm run mint:test-tokens
-```
-Copy the MINT_ADDRESS from the output; config.ts auto-updates.
+- Install dependencies:
+  ```bash
+  npm install
+  ```
+- Configure config/config.ts with wallet path and RPC URL (e.g., https://rpc.ankr.com/solana_devnet).
 
 ## Run Examples
 
-**Check Balance**:  
-```bash
-npm run example:balance
-```
-
-**View Token Info**:  
-```bash
-npm run example:info
-```
-
-**Transfer Tokens**:  
-```bash
-npm run example:transfer -- D9FChW1G6LnFBnXfVNphoGqsgDGbCaWDRVvNJyEFsFDM 10 GZeQMMzrZdhg2h4CctUFBDGU2mv1R6uJY1LdAGSvpBHp
-```
-
-**Batch Process**:  
-```bash
-npm run batch
-```
+- Mint Token: npm run mint:test-tokens
+- Check Balance: npm run example:balance
+- View Token Info: npm run example:info
+- Transfer Tokens: npm run example:transfer -- <TOKEN_ADDRESS> <AMOUNT> <RECIPIENT>
+- Batch Process: npm run batch
 
 ## Troubleshooting
 
-### Common Issues
-
-1. **"Insufficient Balance"**: "Error: Insufficient balance. You have 0 tokens but tried to send 1."
-   - Fix:  
-     - Verify token balance: `npm run example:balance`  
-     - Ensure TOKEN_ADDRESS matches your minted token.  
-     - Request SOL: `solana airdrop 2 <WALLET_ADDRESS> --url https://rpc.ankr.com/solana_devnet`
-
-2. **"Script File Not Found"**:
-   - Fix:  
-     - Run commands from the project root.  
-     - Check paths in docs/examples/.
-
-3. **"Fetch Failed" or Network Errors**:
-   - Fix: Edit config/config.ts:  
-     ```typescript
-     RPC_URL: "https://rpc.ankr.com/solana_devnet",
-     ```
-
-4. **"Metadata Not Found"**:
-   - Fix: Run mint:test-tokens with metadata support or use a pre-metadata token.
-
-### Best Practices
-- Use a dedicated test wallet for development.  
-- Test with small amounts before scaling.
+- "Insufficient Balance": Airdrop SOL: solana airdrop 2 <WALLET_ADDRESS> --url https://rpc.ankr.com/solana_devnet
+- "Fetch Failed": Update RPC_URL in config.ts to https://rpc.ankr.com/solana_devnet
+- "Metadata Not Found": Metadata is optional; check ../journey/debugging-notes.md for progress
+- Full guide: Troubleshooting (docs/guides/troubleshooting.md)
 
 ## Documentation
 
-- **Guides**: docs/guides/token-creation.md, docs/guides/metadata-setup.md  
-- **Technical**: technical/architecture.md, technical/api-reference.md
+- Guides: Token Creation (docs/guides/token-creation.md), Troubleshooting (docs/guides/troubleshooting.md)
+- Technical: Architecture (technical/architecture.md), API Reference (technical/api-reference.md)
+- Debugging: Notes (../journey/debugging-notes.md)
 
 ## Testing
 
-Run tests with Jest (planned):  
+Tests with Jest are planned:
 ```bash
-npm test
+npm test  # Coming soon
 ```
 
 ## Contributing
 
-Contributions are not currently accepted. For inquiries, contact the MOTO PROTOCOL team.
+Contributions are not currently accepted. Contact the MOTO PROTOCOL team for inquiries.
 
 ## License
 
-MIT License Copyright (c) 2024 MOTO PROTOCOL
+MIT License © 2025 MOTO PROTOCOL. See LICENSE for details.
 
-See full MIT License (#mit-license) below.
-
-### Third-Party Licenses
-- @solana/web3.js: Apache-2.0  
-- @solana/spl-token: Apache-2.0  
-- @metaplex-foundation/mpl-token-metadata: Apache-2.0
+### Third-Party Licenses:
+- @solana/web3.js: Apache-2.0
+- @solana/spl-token: Apache-2.0
+- @metaplex-foundation/js: Apache-2.0
 
 ## Notes
-- For commercial use, contact the MOTO PROTOCOL team.  
-- Test tokens have no real value; use on Devnet only.
 
-## MIT License
+Test tokens have no real value; use on Devnet only.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+For commercial use, reach out to the MOTO PROTOCOL team.
 
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
----
-
+Happy coding! Check out the debugging journey for tips and tricks!
