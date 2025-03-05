@@ -1,4 +1,4 @@
-# MOTO PROTOCOL SPL Token Project
+ # MOTO PROTOCOL SPL Token Project
 
 [![Node.js](https://img.shields.io/badge/Node.js-16.20.0-green)](https://nodejs.org/)
 [![Solana Devnet](https://img.shields.io/badge/Solana-Devnet-blue)](https://solana.com/)
@@ -104,7 +104,7 @@ Get started in minutes:
 
 ## Documentation
 
-- Guides: [Token Creation](docs/ guides/token-creation.md), [Troubleshooting](docs/guides/troubleshooting.md)
+- Guides: [Token Creation](docs/guides/token-creation.md), [Troubleshooting](docs/guides/troubleshooting.md)
 - Technical: [Architecture](technical/architecture.md), [API Reference](technical/api-reference.md)
 - Debugging: [Notes](/journey/debugging-notes.md)
 
