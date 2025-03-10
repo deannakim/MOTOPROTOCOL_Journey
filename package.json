@@ -39,7 +39,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/MOTOPROTOCOL/MOTOPROTOCOL_Journey.git"
+    "url": "git+https://github.com/deannakim/MOTOPROTOCOL_Journey/.git"
   },
   "keywords": [
     "solana",
@@ -48,11 +48,11 @@
     "moto-protocol",
     "devrel"
   ],
-  "author": "MOTOPROTOCOL",
+  "author": "DEANNA-KIM",
   "bugs": {
-    "url": "https://github.com/MOTOPROTOCOL/MOTOPROTOCOL_Journey/issues"
+    "url": "https://github.com/deannakim/MOTOPROTOCOL_Journey/issues"
   },
-  "homepage": "https://github.com/MOTOPROTOCOL/MOTOPROTOCOL_Journey#readme",
+  "homepage": "https://github.com/deannakim/MOTOPROTOCOL_Journey/y#readme",
   "directories": {
     "doc": "docs"
   },
